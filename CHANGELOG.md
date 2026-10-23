@@ -7,11 +7,21 @@ and the project uses [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Custom formats: `--format` (Python: `generate_scene(formats=...)`) replaces
+  a preset's sizes and shapes with a weighted list in cm, e.g.
+  `140x180@2,round:150,oval:140x220`; dicts and tuples work in Python
+  (`maillage.formats`). `summary.json` counts the pieces of each format drawn.
+- `maillage list` shows round and oval formats as `⌀150` and `oval 140×200`.
 - `scarf` preset (Accessories): knitted winter scarf, 20×140 to 30×180 cm,
   in the new `wool_knit` fabric (350 g/m², 3 mm), solid, gingham or with the
   new `cross_stripes` pattern (stripes across the width).
 - README: all presets side by side, draped in Blender.
 - GitHub social preview image (`docs/images/social_preview.png`).
+
+### Fixed
+- `summary.json` and `drop_test.json` are written (and read by the tests) in
+  UTF-8: on Windows, a round format (`⌀150`) failed with the default cp1252
+  encoding.
 
 ### Changed
 - Flag bands have unequal, asymmetric widths, so that random colours are

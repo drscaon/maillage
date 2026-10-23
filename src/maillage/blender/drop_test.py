@@ -535,7 +535,7 @@ def run(
 
     if frames_dir is not None:
         report["frames_dir"] = str(frames_dir)
-    (out / "drop_test.json").write_text(json.dumps(report, indent=2) + "\n")
+    (out / "drop_test.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     report["report"] = str(out / "drop_test.json")
     return report
 

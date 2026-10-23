@@ -20,7 +20,7 @@ def test_drop_test(tmp_path, preset, scenario):
     result = subprocess.run(
         run + ["drop-test", str(folder), "--pieces", "1", "--frames", "72"], capture_output=True, text=True
     )
-    report = json.loads((folder / "drop_test" / "drop_test.json").read_text())
+    report = json.loads((folder / "drop_test" / "drop_test.json").read_text(encoding="utf-8"))
     piece = report["pieces"][0]
     assert piece["scenario"] == scenario
     assert piece["finite"]

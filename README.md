@@ -73,6 +73,7 @@ maillage generate --preset tea_towel                     # 12 pieces, triangles
 maillage generate --preset tablecloth --count 20 --seed 3
 maillage generate --preset bath_towel --topology grid --vertices 2500
 maillage generate --preset napkin --fabric silk --no-cut --no-color
+maillage generate --preset tablecloth --format "140x180@2,round:150,oval:140x220"
 maillage preview output/tea_towel                        # flat sheet (matplotlib)
 maillage drop-test output/tea_towel --pieces 4 --render  # Blender drape test
 maillage drop-test output/tea_towel --gif                # + animated GIF (Pillow)
@@ -105,6 +106,10 @@ napkins = generate_scene(
     variations=Variations(cut=False),
 )
 write_outputs(napkins, "output")
+
+# tablecloths in your own sizes: a 140×180 rectangle twice as often as the rest
+tablecloths = generate_scene("tablecloth", count=12, formats="140x180@2, round:150, oval:140x220")
+write_outputs(tablecloths, "output")
 ```
 
 ### Presets
@@ -154,6 +159,37 @@ national flags (equal or symmetric bands) are unlikely.
 
 `--fabric` gives every piece the same fabric, whatever the preset's mix.
 
+### Formats
+
+Each preset draws from its own retail formats (table above). `--format`
+(Python: `formats=`) replaces them with your sizes and shapes, in cm, as a
+comma-separated list:
+
+| Format | Shape |
+|---|---|
+| `50x70` (or `rect:50x70`, `50×70`) | rectangle, 50 × 70 cm |
+| `oval:140x200` (or `ellipse:140x200`) | ellipse, 140 × 200 cm |
+| `round:150` | circle, 150 cm in diameter |
+| `50x70@3` | any of the above with a weight (here 3; 1 when there is no `@`) |
+
+**Weights.** Each piece draws one format at random, with a probability
+proportional to its weight: weight / sum of the weights. With
+`--format "140x180@2,round:150,oval:140x220"` the weights are 2, 1 and 1
+(sum 4), so each tablecloth has a 50 % chance of being 140×180, 25 % of being
+round and 25 % of being oval: about 6, 3 and 3 out of 12 on average, the exact
+counts depending on the seed. Only the ratios matter (`@2`, `@1`, `@1` is the
+same as `@50`, `@25`, `@25`), and without any `@` all formats are equally
+likely. With `--no-size`, nothing is drawn: every piece takes the first format
+of the list, at its exact size. The presets' own formats use the same weights
+(a `bath_towel` is 70×140 with weight 0.7, 90×150 with weight 0.3).
+
+The longer side is always the length, so `70x50` is the same as `50x70`. The
+preset's size tolerance, cut, corners, fabric and patterns still apply. In
+Python, a format can also be a dict (`{"width": 50, "length": 70, "shape":
+"rect", "weight": 1}`) or a tuple (`(50, 70)`, `(150, 150, "round")`). With
+`--topology grid`, round and oval formats are skipped (at least one rectangle
+is needed). `summary.json` counts the pieces of each format drawn.
+
 ### Variations
 
 Each aspect has its own random stream: turning one off leaves the others
@@ -189,7 +225,7 @@ imperfect cut, spread across the piece.*
 | `maillage_<preset>.usdc` | OpenUSD scene (Blender: File > Import > USD) |
 | `textures/<piece>.png` | pattern texture of each piece |
 | `pieces.csv` | per piece: fabric, shape, pattern, size, corner radius, mass, mesh metrics |
-| `summary.json` | counts by fabric, pattern and shape; mass and mesh statistics |
+| `summary.json` | counts by fabric, pattern, shape and format; mass and mesh statistics |
 | `sheet.png` | flat preview (`maillage preview`) |
 | `drop_test/` | `drop_test.json`, `draped.usdc`, `drop_test.png`, `drop_test.gif` and `frames/` (`maillage drop-test`) |
 

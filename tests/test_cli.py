@@ -89,3 +89,13 @@ def test_fabric_list_option(tmp_path, capsys):
     )
     with pytest.raises(SystemExit):
         main(["generate", "--fabric", "velvet"])
+
+
+def test_format_option(tmp_path, capsys):
+    args = ["generate", "--preset", "tablecloth", "--count", "4", "--vertices", "120", "--out", str(tmp_path)]
+    assert main(args + ["--format", "round:120"]) == 0
+    out = capsys.readouterr().out
+    summary = json.loads(out[: out.rindex("}") + 1])
+    assert summary["formats"] == {"⌀120": 4} and summary["shapes"] == {"ellipse": 4}
+    with pytest.raises(SystemExit):
+        main(["generate", "--format", "hex:50x70"])

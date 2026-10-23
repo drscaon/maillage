@@ -2,7 +2,7 @@
 
 maillage list
 maillage generate --preset tea_towel [--count 12] [--seed 1] [--topology tri|grid] [--vertices 1500]
-                  [--fabric linen]
+                  [--fabric linen] [--format 50x70,oval:140x200,round:150]
                   [--no-size] [--no-cut] [--no-corners] [--no-color] [--out output]
 maillage preview output/tea_towel
 maillage drop-test output/tea_towel [--pieces 4] [--frames 120] [--render] [--gif]
@@ -21,6 +21,7 @@ from pathlib import Path
 from . import __version__
 from .blender import DROP_TEST_SCRIPT
 from .fabrics import FABRICS
+from .formats import describe, parse_formats
 from .generator import Variations, generate_scene, summarize, write_outputs
 from .mesh import TOPOLOGIES
 from .presets import CATEGORIES, PRESETS
@@ -40,6 +41,13 @@ def _positive_int(text: str) -> int:
     return value
 
 
+def _formats(text: str):
+    try:
+        return parse_formats(text)
+    except ValueError as e:
+        raise argparse.ArgumentTypeError(str(e)) from e
+
+
 def _fabrics(text: str):
     names = [n.strip() for n in text.split(",") if n.strip()]
     unknown = [n for n in names if n not in FABRICS]
@@ -54,10 +62,7 @@ def _cmd_list(_args) -> int:
         for k, p in PRESETS.items():
             if p["category"] != c:
                 continue
-            sizes = ", ".join(
-                f"{f['width']}×{f['length']}" if f["shape"] == "rect" else f"⌀{f['width']}×{f['length']}"
-                for f in p["formats"]
-            )
+            sizes = ", ".join(describe(f) for f in p["formats"])
             print(f"  {k:<18} {p['label']:<42} {sizes} cm  [{', '.join(p['fabrics'])}]")
     print("Fabrics")
     for k, f in FABRICS.items():
@@ -67,7 +72,9 @@ def _cmd_list(_args) -> int:
 
 def _cmd_generate(args) -> int:
     var = Variations(**{k: getattr(args, k) for k in VARIATION_HELP})  # fabric: see --fabric
-    scene = generate_scene(args.preset, args.count, args.seed, var, args.topology, args.vertices, args.fabric)
+    scene = generate_scene(
+        args.preset, args.count, args.seed, var, args.topology, args.vertices, args.fabric, args.format
+    )
     out = write_outputs(scene, args.out)
     print(json.dumps(summarize(scene), indent=2, ensure_ascii=False))
     print(f"written to {out}")
@@ -158,6 +165,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     g.add_argument(
         "--vertices", type=_positive_int, default=1500, help="target vertices per piece (default: 1500)"
+    )
+    g.add_argument(
+        "--format",
+        default=None,
+        type=_formats,
+        help="sizes and shapes in cm instead of the preset's, comma-separated, drawn by weight: "
+        "50x70, oval:140x200, round:150; @W sets a weight (default 1), each piece drawing a format "
+        "with probability weight / sum of weights: 140x180@2,round:150 gives 2/3 rectangles",
     )
     g.add_argument(
         "--fabric",

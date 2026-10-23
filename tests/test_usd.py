@@ -14,9 +14,9 @@ def folder(tmp_path_factory):
 
 def test_files_written(folder):
     assert (folder / "maillage_flag.usdc").exists()
-    assert (folder / "pieces.csv").read_text().count("\n") == 3
+    assert (folder / "pieces.csv").read_text(encoding="utf-8").count("\n") == 3
     assert sorted(p.name for p in (folder / "textures").iterdir()) == ["flag_000.png", "flag_001.png"]
-    assert json.loads((folder / "summary.json").read_text())["count"] == 2
+    assert json.loads((folder / "summary.json").read_text(encoding="utf-8"))["count"] == 2
 
 
 def test_stage_conventions(folder):

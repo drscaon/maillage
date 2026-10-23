@@ -14,6 +14,7 @@ import numpy as np
 from . import mesh as meshing
 from . import texture
 from .fabrics import FABRICS
+from .formats import describe, parse_formats
 from .outline import Cut, Outline
 from .presets import PRESETS
 
@@ -95,13 +96,14 @@ def make_piece(
     topology: str,
     vertices: int,
     fabric: str | None = None,
+    formats: list[dict] | None = None,
 ) -> Piece:
     pr = PRESETS[preset_key]
-    formats = pr["formats"]
+    formats = formats or pr["formats"]
     if topology == "grid":
         formats = [f for f in formats if f["shape"] == "rect"]
         if not formats:
-            raise ValueError(f"preset {preset_key!r} has no rectangular format for the grid topology")
+            raise ValueError("the grid topology needs at least one rectangular format")
 
     if var.size:
         fmt = formats[_weighted(_rng(seed, index, "format"), {i: f["weight"] for i, f in enumerate(formats)})]
@@ -193,10 +195,15 @@ def generate_scene(
     topology: str = "tri",
     vertices: int = 1500,
     fabric: str | list[str] | None = None,
+    formats=None,
 ) -> Scene:
     """Generate `count` distinct pieces of a preset, laid flat side by side.
+
     `fabric` forces one fabric for every piece instead of the preset's mix; a
-    list of fabrics is used in turn (piece i gets fabric[i % len])."""
+    list of fabrics is used in turn (piece i gets fabric[i % len]).
+    `formats` replaces the preset's sizes and shapes: a list of formats, or a
+    comma-separated string, drawn by weight, e.g. "50x70, oval:140x200@2,
+    round:150" (see formats.py)."""
     if preset not in PRESETS:
         raise ValueError(f"unknown preset {preset!r}; see `maillage list`")
     if count < 1:
@@ -209,9 +216,12 @@ def generate_scene(
     for f in fabrics:
         if f not in FABRICS:
             raise ValueError(f"unknown fabric {f!r}; see `maillage list`")
+    custom = parse_formats(formats) if formats is not None else None
     var = variations or Variations()
     pieces = [
-        make_piece(preset, i, seed, var, topology, vertices, fabrics[i % len(fabrics)] if fabrics else None)
+        make_piece(
+            preset, i, seed, var, topology, vertices, fabrics[i % len(fabrics)] if fabrics else None, custom
+        )
         for i in range(count)
     ]
     _layout(pieces)
@@ -236,6 +246,12 @@ def summarize(scene: Scene) -> dict:
         "fabrics": dict(Counter(p.fabric for p in ps)),
         "patterns": dict(Counter(p.pattern["pattern"] for p in ps)),
         "shapes": dict(Counter(p.shape for p in ps)),
+        "formats": dict(
+            Counter(
+                describe({"width": p.nominal[1] * 100, "length": p.nominal[0] * 100, "shape": p.shape})
+                for p in ps
+            )
+        ),
         "mass_kg": {k: round(v, 4) for k, v in _minmeanmax([p.mass for p in ps]).items()},
         "vertices": stat("vertices"),
         "edge_mean_mm": stat("edge_mean_mm"),
@@ -270,5 +286,7 @@ def write_outputs(scene: Scene, out_root: str | Path = "output") -> Path:
                 + [f"{p.corner_radius:.4f}", f"{p.mass:.5f}"]
                 + [round(v, 5) if isinstance(v, float) else v for v in p.metrics.values()]
             )
-    (out / "summary.json").write_text(json.dumps(summarize(scene), indent=2, ensure_ascii=False) + "\n")
+    (out / "summary.json").write_text(
+        json.dumps(summarize(scene), indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     return out
