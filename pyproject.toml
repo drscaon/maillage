@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maillage"
-version = "0.1.0a1"
+version = "0.1.0b1"
 description = "Realistic textile assets generator for Physical AI: procedural cloth pieces (towels, napkins, sheets, flags) with real sizes, fabrics and patterns, exported to OpenUSD and validated by a cloth drop test in Blender."
 readme = "README.md"
 license = "MIT"
@@ -13,7 +13,7 @@ requires-python = ">=3.10"
 authors = [{ name = "Daniel Régis Sarmento Caon" }]
 keywords = ["cloth", "textile", "simulation", "openusd", "blender", "procedural", "robotics", "physical-ai", "synthetic-data"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Graphics :: 3D Modeling",
