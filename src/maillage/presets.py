@@ -194,6 +194,23 @@ PRESETS = {
         "base_colors": ["#7b1fa2", "#c2185b", "#00838f", "#f57f17", "#283593", "#efebe9"],
         "accent_colors": ["#fff8e1", "#212121", "#ffd54f", "#80cbc4"],
     },
+    "scarf": {
+        "category": "Accessories",
+        "label": "Knitted winter scarf",
+        "formats": [
+            {"width": 25, "length": 160, "shape": "rect", "weight": 0.5},
+            {"width": 30, "length": 180, "shape": "rect", "weight": 0.3},
+            {"width": 20, "length": 140, "shape": "rect", "weight": 0.2},
+        ],
+        "tolerance": 0.03,  # knits are less regular than wovens
+        "fabrics": {"wool_knit": 1.0},
+        "corner_radius": (0.0, 0.5),
+        "cut": {"waviness_mm": (1.0, 4.0), "skew_deg": 1.0},
+        "hem": 0.5,  # knitted edge
+        "patterns": {"cross_stripes": 0.5, "solid": 0.3, "gingham": 0.2},
+        "base_colors": ["#7b1e1e", "#1f3a5f", "#3e4a3d", "#5d4037", "#9e9e9e", "#d7c4a3", "#212121"],
+        "accent_colors": ["#f5f0e6", "#c62828", "#f9a825", "#1565c0", "#212121"],
+    },
     # --------------------------------------------------------------- Outdoor
     "flag": {
         "category": "Outdoor",

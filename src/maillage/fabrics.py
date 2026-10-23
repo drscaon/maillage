@@ -29,8 +29,8 @@ depend on the resolution:
 
 How the values were set (with the drop test itself, maillage/blender/):
 
-- tension = 0.03 × areal density for woven fabrics (0.02 for knits and
-  fleece, 0.04 for denim): about 3 % stretch when a piece drapes;
+- tension = 0.03 × areal density for woven fabrics (0.02 for knits, wool
+  knit and fleece, 0.04 for denim): about 3 % stretch when a piece drapes;
 - bending: Blender's angular bending model vibrates instead of settling once
   the bending stiffness is too high for the vertex mass (stiff fabric, fine
   mesh). Measured on 1 cm edges, the limit is about 0.015 × areal density;
@@ -135,5 +135,14 @@ FABRICS = {
         "roughness": 0.35,
         "hem_bending_factor": 4.0,
         "blender": {"tension": 0.0018, "shear": 0.00072, "bending": 7.8e-06, "air_damping": 4e-05},
+    },
+    "wool_knit": {
+        "label": "Wool knit (winter scarf)",
+        "areal_density": 0.35,
+        "thickness": 0.003,
+        "friction": 0.7,
+        "roughness": 0.95,
+        "hem_bending_factor": 1.5,
+        "blender": {"tension": 0.007, "shear": 0.0021, "bending": 0.00146, "air_damping": 0.00012},
     },
 }

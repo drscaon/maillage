@@ -49,3 +49,13 @@ def test_unknown_pattern():
 def test_srgb_to_linear():
     assert texture.srgb_to_linear(1.0) == pytest.approx(1.0)
     assert texture.srgb_to_linear(0.5) == pytest.approx(0.214, abs=1e-3)
+
+
+def test_flag_bands_are_unequal_and_asymmetric():
+    for seed in range(50):
+        rng = np.random.default_rng(seed)
+        spec = texture.draw_pattern(rng, "bands", ["#ffffff", "#c62828"], ["#1565c0", "#ffffff"])
+        w = spec["widths"]
+        assert sum(w) == pytest.approx(1.0) and min(w) >= 0.12
+        assert max(w) / min(w) >= 1.4
+        assert abs(w[0] - w[-1]) >= 0.12

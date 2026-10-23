@@ -6,6 +6,18 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- `scarf` preset (Accessories): knitted winter scarf, 20×140 to 30×180 cm,
+  in the new `wool_knit` fabric (350 g/m², 3 mm), solid, gingham or with the
+  new `cross_stripes` pattern (stripes across the width).
+- README: all presets side by side, draped in Blender.
+- GitHub social preview image (`docs/images/social_preview.png`).
+
+### Changed
+- Flag bands have unequal, asymmetric widths, so that random colours are
+  unlikely to reproduce a real national flag (these mostly use equal or
+  symmetric bands).
+
 ## [0.1.0a1] - 2026-10-23 (alpha)
 
 First version.
