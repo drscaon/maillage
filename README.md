@@ -275,7 +275,7 @@ same 40 cm square was draped in each (`maillage generate --preset napkin
 
 In this version the fabrics differ in mass, thickness, friction and look
 much more than in drape: the drape coefficients stay within 0.35–0.42,
-where real silk and denim are far apart (see [Limits](#limits)).
+where real silk and denim are far apart (see the [roadmap](#roadmap)).
 
 ![Four 40 cm squares (silk, plain cotton, linen, denim) falling onto their pedestals](docs/images/drape_fabrics.gif)
 
@@ -301,8 +301,9 @@ and damping multiplied by the same factor, which leaves the motion unchanged
 and keeps Blender's solver in the range its tolerances are tuned for.
 
 Tension gives about 3 % stretch when a piece drapes; bending is smaller for
-softer fabrics. **The values are not calibrated** against measured fabric
-properties.
+softer fabrics, and kept low for all of them (see the
+[roadmap](#roadmap)). **The values are not calibrated** against measured
+fabric properties.
 
 ## Method in brief
 
@@ -331,10 +332,9 @@ properties.
   cloth solver. Nothing is exported yet for NVIDIA OmniPhysics deformables
   (Isaac Sim) or MuJoCo flex; the geometry and physical attributes are there,
   the engine-specific schemas are not.
-- **Not calibrated, and fabrics drape alike.** Stiffness values give
-  plausible, consistent behaviour, not measured behaviour (no Kawabata or
-  Cusick measurements behind them), and the bending values are kept low:
-  the drape coefficients of the fabrics stay close to one another.
+- **Fabrics drape alike.** Bending stiffness is kept low for every fabric
+  (see the [roadmap](#roadmap)), and no value is calibrated against
+  measurements (no Kawabata or Cusick data behind them).
 - **Flat pieces only.** No garments (sewn panels), no holes or grommets (a
   flag is pinned at its hoist corners instead), no folded or crumpled starting
   states, no wet cloth.
@@ -343,13 +343,23 @@ properties.
 
 ## Roadmap
 
-1. Pre-draped and crumpled states as OpenUSD variants (the drape test already
+1. **Stiff fabrics that drape like real ones.** Blender's angular bending
+   model (the only one that works on triangle meshes) becomes unstable when
+   the bending stiffness is high relative to the vertex mass, as with stiff
+   fabrics on fine meshes: instead of settling, the cloth keeps vibrating,
+   and adding damping makes it worse. Every fabric's bending stiffness is
+   therefore kept below this limit (about 0.015 × areal density for 1 cm
+   edges, measured), so a 40 cm square drapes with a coefficient of
+   0.35–0.42 whether it is silk or denim. Next steps: more solver steps or a
+   coarser simulation mesh for stiff fabrics, quad-grid meshes with
+   Blender's linear bending model, and other engines.
+2. Pre-draped and crumpled states as OpenUSD variants (the drape test already
    exports draped meshes), and folded states for laundry-folding tasks.
-2. Engine-neutral physical stiffness (tensile and bending rigidity in SI
+3. Engine-neutral physical stiffness (tensile and bending rigidity in SI
    units) with per-engine mappings, starting with OmniPhysics surface
    deformables.
-3. Calibration against published fabric measurements.
-4. Simple garments from sewing patterns.
+4. Calibration against published fabric measurements.
+5. Simple garments from sewing patterns.
 
 ## Development
 
