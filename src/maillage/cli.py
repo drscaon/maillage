@@ -171,7 +171,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         type=_formats,
         help="sizes and shapes in cm instead of the preset's, comma-separated, drawn by weight: "
-        "50x70, oval:140x200, round:150, 50x70@3 (weight 3)",
+        "50x70, oval:140x200, round:150; @W sets a weight (default 1), each piece drawing a format "
+        "with probability weight / sum of weights: 140x180@2,round:150 gives 2/3 rectangles",
     )
     g.add_argument(
         "--fabric",

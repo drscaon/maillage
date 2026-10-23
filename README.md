@@ -163,14 +163,25 @@ national flags (equal or symmetric bands) are unlikely.
 
 Each preset draws from its own retail formats (table above). `--format`
 (Python: `formats=`) replaces them with your sizes and shapes, in cm, as a
-comma-separated list drawn by weight:
+comma-separated list:
 
 | Format | Shape |
 |---|---|
 | `50x70` (or `rect:50x70`, `50×70`) | rectangle, 50 × 70 cm |
 | `oval:140x200` (or `ellipse:140x200`) | ellipse, 140 × 200 cm |
 | `round:150` | circle, 150 cm in diameter |
-| `50x70@3` | any of the above, three times as likely as a weight-1 format |
+| `50x70@3` | any of the above with a weight (here 3; 1 when there is no `@`) |
+
+**Weights.** Each piece draws one format at random, with a probability
+proportional to its weight: weight / sum of the weights. With
+`--format "140x180@2,round:150,oval:140x220"` the weights are 2, 1 and 1
+(sum 4), so each tablecloth has a 50 % chance of being 140×180, 25 % of being
+round and 25 % of being oval: about 6, 3 and 3 out of 12 on average, the exact
+counts depending on the seed. Only the ratios matter (`@2`, `@1`, `@1` is the
+same as `@50`, `@25`, `@25`), and without any `@` all formats are equally
+likely. With `--no-size`, nothing is drawn: every piece takes the first format
+of the list, at its exact size. The presets' own formats use the same weights
+(a `bath_towel` is 70×140 with weight 0.7, 90×150 with weight 0.3).
 
 The longer side is always the length, so `70x50` is the same as `50x70`. The
 preset's size tolerance, cut, corners, fabric and patterns still apply. In

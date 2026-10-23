@@ -10,7 +10,11 @@ where width is the shorter side, or one of these shorthands (sizes in cm):
     "50x70"          rectangle 50 × 70 cm (also "rect:50x70", "50×70")
     "oval:140x200"   ellipse 140 × 200 cm (also "ellipse:140x200")
     "round:150"      circle, 150 cm in diameter
-    "50x70@3"        any of the above with a relative weight (default 1)
+    "50x70@3"        any of the above with a weight (default 1)
+
+Each piece draws one format with a probability proportional to its weight
+(weight / sum of the weights): "140x180@2, round:150" gives 2/3 rectangles
+and 1/3 rounds on average.
 
 A tuple (width, length) or (width, length, shape) works too. Sizes given
 longest first are swapped, so width is always the shorter side.
