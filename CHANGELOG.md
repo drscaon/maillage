@@ -18,6 +18,11 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - README: all presets side by side, draped in Blender.
 - GitHub social preview image (`docs/images/social_preview.png`).
 
+### Fixed
+- `summary.json` and `drop_test.json` are written (and read by the tests) in
+  UTF-8: on Windows, a round format (`⌀150`) failed with the default cp1252
+  encoding.
+
 ### Changed
 - Flag bands have unequal, asymmetric widths, so that random colours are
   unlikely to reproduce a real national flag (these mostly use equal or
