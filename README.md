@@ -14,7 +14,7 @@
 </p>
 
 Maillage generates towels, tea towels, napkins, tablecloths, bed sheets,
-cleaning cloths, scarves and flags with real sizes, fabrics, masses and
+cleaning cloths, bandanas, silk and knitted scarves and flags with real sizes, fabrics, masses and
 patterns, meshed for cloth simulation and exported to **OpenUSD**. Every piece
 is checked in **Blender** by a drape test: it imports, simulates without
 exploding, stretches little, does not go through obstacles and comes to rest.
@@ -42,8 +42,8 @@ imported into Blender and draped by the drape test. Render:
 - Meshes each piece for cloth solvers: near-equilateral triangles for any
   outline (rounded corners, round tablecloths), or a structured quad grid for
   rectangles (the topology of a woven fabric).
-- Draws a procedural pattern (solid, end bands, stripes, gingham, border, flag
-  bands) as a PNG texture that follows the fabric, not the cut.
+- Draws a procedural pattern (solid, end bands, stripes along or across,
+  gingham, border, flag bands) as a PNG texture that follows the fabric, not the cut.
 - **Measures** every mesh (area, perimeter, edge lengths, minimum angles) and
   derives the mass from the fabric's areal density.
 - Exports an OpenUSD scene: meshes with UVs, a textured UsdPreviewSurface
@@ -121,11 +121,20 @@ write_outputs(napkins, "output")
 | Cleaning | `microfiber_cloth` | 40×40, 30×30 | microfiber |
 | Accessories | `bandana` | 55×55 | plain cotton |
 | | `silk_scarf` | 90×90, 50×160 | silk |
+| | `scarf` | 25×160, 30×180, 20×140 (knitted winter scarf) | wool knit |
 | Outdoor | `flag` | 100×150, 60×90 (hung by the hoist) | polyester knit |
+
+![The 12 presets side by side, one piece each, draped in Blender](docs/images/all_presets.jpg)
+
+*One piece of each preset (seed 2), simulated 5 s by the Blender drape test
+and rendered with Cycles; each image is framed on its own piece, so scales
+differ (30 cm washcloth to 3 m sheet). Same colours for the three terry
+presets: they share a palette and, with one seed, the same colour draw.*
 
 Sizes are common retail formats; values are realistic orders of magnitude,
 not measurements of a specific product. Flags use generic two or three band
-designs with random colours (no national flags).
+designs with random colours on unequal, asymmetric bands, so that real
+national flags (equal or symmetric bands) are unlikely.
 
 ### Fabrics
 
@@ -141,6 +150,7 @@ designs with random colours (no national flags).
 | `microfiber` | 300 g/m² | 2 mm | 0.9 |
 | `polyester_knit` | 115 g/m² | 0.2 mm | 0.4 |
 | `silk` | 60 g/m² | 0.1 mm | 0.3 |
+| `wool_knit` | 350 g/m² | 3 mm | 0.7 |
 
 `--fabric` gives every piece the same fabric, whatever the preset's mix.
 
@@ -245,7 +255,7 @@ draped assets.
 ### Results
 
 Indicative results of `maillage drop-test` on three pieces of each preset
-(seed 1, 1,500 vertices per piece, 120 frames, Blender 5.2):
+(seed 1, ~1,500 vertices per piece, 120 frames, Blender 5.2):
 
 | Preset | Mass (g) | Vertices | Scenario | Drape coefficient | Stretch (p99) | Result |
 |---|---|---|---|---|---|---|
@@ -259,6 +269,7 @@ Indicative results of `maillage drop-test` on three pieces of each preset
 | `microfiber_cloth` | 47–49 | 1554–1575 | drape | 0.37–0.41 | 2.2–2.4 % | 3/3 pass |
 | `bandana` | 42–43 | 1558–1576 | drape | 0.30–0.33 | 2.5–3.1 % | 3/3 pass |
 | `silk_scarf` | 48–49 | 1560–1579 | drape | 0.25–0.27 | 3.1–3.4 % | 3/3 pass |
+| `scarf` | 134–189 | 1608–1621 | drape | 0.10–0.13 | 2.6–2.8 % | 3/3 pass |
 | `flag` | 170–174 | 1551–1567 | hang | — | 1.9–2.4 % | 3/3 pass |
 
 No piece went through the pedestal or the floor. The drape coefficient
