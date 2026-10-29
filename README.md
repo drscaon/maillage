@@ -9,24 +9,30 @@
 
 <p align="center">
   <a href="https://github.com/drscaon/maillage/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/drscaon/maillage/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://pypi.org/project/maillage/"><img alt="PyPI" src="https://img.shields.io/pypi/v/maillage"></a>
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green">
+  <a href="https://primvaria.com"><img alt="Part of Primvaria" src="https://img.shields.io/badge/suite-Primvaria-0f6e74"></a>
 </p>
 
 Maillage generates towels, tea towels, napkins, tablecloths, bed sheets,
 cleaning cloths, bandanas, silk and knitted scarves and flags with real sizes, fabrics, masses and
 patterns, meshed for cloth simulation and exported to **OpenUSD**. Every piece
-is checked in **Blender** by a drape test: it imports, simulates without
-exploding, stretches little, does not go through obstacles and comes to rest.
+is checked in **Blender** and in **MuJoCo** by a drape test: it imports, simulates
+without exploding, stretches little, does not go through obstacles and comes
+to rest. The scenes are also exported for **NVIDIA OmniPhysics** (Isaac Sim) as
+surface deformables.
 
 It is built for **Physical AI**: robots that fold laundry, lay a table or hand
 over a towel are trained and tested in simulation, and they need many
 different cloths, not one subdivided square; perception models need synthetic
-images of crumpled and draped fabric with exact ground truth. Everything can run
-on CPU. Maillage is the sister project of
-[Granulaire](https://github.com/drscaon/granulaire) (granular assets) and
-follows the same approach: distributions instead of one shape, measured
-outputs, honest limits.
+images of crumpled and draped fabric with exact ground truth. Everything can
+run on CPU. Maillage is part of [**Primvaria**](https://primvaria.com), with
+[Granulaire](https://github.com/drscaon/granulaire) (granular assets),
+[Filaire](https://github.com/drscaon/filaire) (cables) and
+[Quincaillerie](https://github.com/drscaon/quincaillerie) (fasteners, cells
+and holders), and follows the same approach: distributions instead of one
+shape, measured outputs, honest limits.
 
 ![Tea towels draped on the clamped pedestal of the Blender drape test](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/blender_drape.jpg)
 
@@ -52,6 +58,10 @@ imported into Blender and draped by the drape test. Render:
 - **Tests every piece in Blender** (`maillage drop-test`): import, cloth
   simulation, automatic checks, Cusick drape coefficient, the draped meshes
   exported back to OpenUSD and an optional Cycles render.
+- **Exports and tests every piece in MuJoCo** (`maillage_<preset>.xml`, one
+  flex cloth per piece; `maillage sim-test`), and **exports it for NVIDIA
+  OmniPhysics** as surface deformables (`maillage_<preset>_omniphysics.usda`);
+  see [Engines](#engines).
 
 ## Installation
 
@@ -366,6 +376,16 @@ fabric properties.
 
 ## Engines
 
+Every file is OpenUSD with standard `UsdPhysics` schemas. Where each engine
+stands, as on the [Primvaria engine matrix](https://primvaria.com/#engines):
+
+| Engine | Status |
+|---|---|
+| OpenUSD validators (`usdchecker`) | **tested**: every preset, OmniPhysics layer included, in CI |
+| Blender | **tested**: drape test of every preset (`maillage drop-test`) |
+| MuJoCo | **tested**: flex export and drape test of every preset (`maillage sim-test`) |
+| NVIDIA OmniPhysics (Isaac Sim 5+) | surface deformables exported, structure checked, not simulated yet |
+
 The main file is engine-neutral; engine-specific exports are read back from
 it, so every engine sees the same piece.
 
@@ -527,4 +547,4 @@ paths, so it displays without the font installed.
 
 ---
 
-Maillage is part of [**Primvaria**](https://github.com/drscaon/primvaria), physics-ready variability for Physical AI, in OpenUSD: `pip install primvaria` installs the whole suite.
+Maillage is part of [**Primvaria**](https://primvaria.com), physics-ready variability for Physical AI, in OpenUSD: `pip install primvaria` installs the whole suite ([source](https://github.com/drscaon/primvaria)).

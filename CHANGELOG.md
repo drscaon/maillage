@@ -26,6 +26,12 @@ and the project uses [Semantic Versioning](https://semver.org/).
   (what `usdchecker` runs) on each file and each variant; the tests and a CI job
   (every preset) require no error and no warning.
 
+### Changed
+
+- README: the same header as the other Primvaria projects (PyPI and suite
+  badges), an Engines table matching the suite's engine matrix, and links to
+  primvaria.com.
+
 ## [0.1.0b2] - 2026-10-29 (beta)
 
 First release on PyPI.
