@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maillage"
-version = "0.1.0b1"
+version = "0.1.0b2"
 description = "Realistic textile assets generator for Physical AI: procedural cloth pieces (towels, napkins, sheets, flags) with real sizes, fabrics and patterns, exported to OpenUSD and validated by a cloth drop test in Blender."
 readme = "README.md"
 license = "MIT"
