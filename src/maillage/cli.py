@@ -5,7 +5,8 @@ maillage generate --preset tea_towel [--count 12] [--seed 1] [--topology tri|gri
                   [--fabric linen] [--format 50x70,oval:140x200,round:150]
                   [--no-size] [--no-cut] [--no-corners] [--no-color] [--out output]
 maillage preview output/tea_towel
-maillage drop-test output/tea_towel [--pieces 4] [--frames 120] [--render] [--gif]
+maillage drop-test output/tea_towel [--pieces 4] [--frames 120] [--render] [--gif]   (Blender)
+maillage sim-test output/tea_towel [--pieces 4] [--seconds 5]                       (MuJoCo, needs [sim])
 maillage blender-script
 """
 
@@ -143,6 +144,23 @@ def _cmd_blender_script(_args) -> int:
     return 0
 
 
+def _cmd_sim_test(args) -> int:
+    try:
+        import mujoco  # noqa: F401
+    except ImportError:
+        print('MuJoCo is needed: pip install "maillage[sim]"', file=sys.stderr)
+        return 2
+    from .sim import mujoco_test
+
+    code = 0
+    for target in args.targets:
+        report = mujoco_test.run(target, args.out, args.pieces, args.seconds, args.seed)
+        print("\n".join(mujoco_test.summary_lines(report)))
+        print(f"report: {report['report']}")
+        code |= not report["passed"]
+    return code
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
         prog="maillage",
@@ -218,6 +236,14 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser(
         "blender-script", help="print the path of the drop-test script, to run with Blender"
     ).set_defaults(func=_cmd_blender_script)
+
+    s = sub.add_parser("sim-test", help="drape test in MuJoCo, read back from the OpenUSD file (needs [sim])")
+    s.add_argument("targets", nargs="+", help="generated folders (output/<preset>) or maillage_*.usdc files")
+    s.add_argument("--out", default=None, help="report folder (default: <folder>/sim_test)")
+    s.add_argument("--pieces", type=_positive_int, default=4, help="pieces tested (default: 4)")
+    s.add_argument("--seconds", type=float, default=5.0, help="simulated time in s (default: 5)")
+    s.add_argument("--seed", type=int, default=1, help="random drop poses (default: 1)")
+    s.set_defaults(func=_cmd_sim_test)
     return ap
 
 

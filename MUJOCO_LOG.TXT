@@ -1,0 +1,3 @@
+WARNING Thu Oct 29 17:17:39 2026: flex 'c' is not rigid and has no equality constraints or passive forces
+Element name 'c', id 0
+

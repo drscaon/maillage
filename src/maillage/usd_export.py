@@ -16,8 +16,15 @@ Each cloth mesh carries:
 - engine-neutral physical properties, as custom attributes: `maillage:fabric`,
   `maillage:arealDensity` (kg/m²), `maillage:mass` (kg), `maillage:thickness`
   (m), `maillage:friction`, nominal and actual sizes, pattern;
+- engine-neutral stiffness in SI units: `maillage:tensileStiffness` (N/m),
+  `maillage:bendingRigidity` (N·m), `maillage:poissonsRatio` (see fabrics.py);
 - stiffness for Blender's cloth solver, for a mesh with 1 cm edges
   (`maillage:blender:*`, see fabrics.py).
+
+Next to it, two engine-specific exports read back from this file:
+`maillage_<preset>_omniphysics.usda` (an OpenUSD layer over this one, with
+NVIDIA OmniPhysics surface deformables, see omniphysics.py) and
+`maillage_<preset>.xml` (a MuJoCo model with flex cloths, see sim/mujoco_model.py).
 
 OpenUSD has no standard schema for cloth simulation (UsdPhysics covers rigid
 bodies and joints), so these properties are custom attributes, documented
@@ -132,6 +139,9 @@ def export_stage(path: str | Path, scene) -> Path:
         _attr(prim, "maillage:size", _F.Float2, Gf.Vec2f(float(p.length), float(p.width)))
         _attr(prim, "maillage:cornerRadius", _F.Float, float(p.corner_radius))
         _attr(prim, "maillage:hemBendingFactor", _F.Float, float(fab["hem_bending_factor"]))
+        _attr(prim, "maillage:tensileStiffness", _F.Float, float(fab["tensile_stiffness"]))
+        _attr(prim, "maillage:bendingRigidity", _F.Float, float(fab["bending_rigidity"]))
+        _attr(prim, "maillage:poissonsRatio", _F.Float, float(fab["poissons_ratio"]))
         bl = fab["blender"]
         for name, value in (
             ("tensionStiffness", bl["tension"]),

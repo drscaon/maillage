@@ -265,14 +265,21 @@ def _minmeanmax(values):
 
 
 def write_outputs(scene: Scene, out_root: str | Path = "output") -> Path:
-    """Write the OpenUSD scene, textures, a CSV table and a summary. Returns the folder."""
+    """Write the OpenUSD scene, its OmniPhysics layer and MuJoCo model, textures, a CSV table
+    and a summary. Returns the folder."""
     from .usd_export import export_stage
 
     out = Path(out_root) / scene.preset_key
     (out / "textures").mkdir(parents=True, exist_ok=True)
     for p in scene.pieces:
         texture.write_png(out / "textures" / f"{p.name}.png", p.image)
-    export_stage(out / f"maillage_{scene.preset_key}.usdc", scene)
+    usd = export_stage(out / f"maillage_{scene.preset_key}.usdc", scene)
+    # engine-specific exports, read back from the file
+    from .omniphysics import write_overlay
+    from .sim.mujoco_model import export as export_mjcf
+
+    write_overlay(usd)
+    export_mjcf(usd)
 
     with open(out / "pieces.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)

@@ -41,7 +41,28 @@ How the values were set (with the drop test itself, maillage/blender/):
 These are **plausible, consistent values, not calibrated** against measured
 fabric properties, and because of that stability limit stiff fabrics (denim,
 terry) drape more in Blender than real ones.
+
+Engine-neutral stiffness, in SI units, for engines with a thin-shell model
+(MuJoCo flex, NVIDIA OmniPhysics surface deformables):
+
+- tensile_stiffness K (N/m): membrane stiffness, force per unit width per
+  unit strain, at the small strains of draping;
+- bending_rigidity B (N·m): bending moment per unit width per unit
+  curvature, the quantity a Kawabata (KES-FB2) or cantilever test measures;
+- poissons_ratio.
+
+Orders of magnitude from published ranges (bending rigidity 1e-6 N·m for silk
+to 1e-4 N·m for denim; initial tensile stiffness 1e2 N/m for weft knits such
+as a scarf, several 1e2 N/m for warp knits such as flag fabric, a few 1e3 N/m
+for wovens), not measurements of these fabrics. A shell model takes a
+Young's modulus E and a thickness t, with membrane stiffness E·t and bending
+rigidity E·t³ / (12 (1 - ν²)): one pair (E, t) gives both K and B exactly,
+see shell(). That thickness is a bending thickness, not the fabric's real
+thickness (fibres slide, so fabrics bend far more easily than a solid plate
+of the same thickness).
 """
+
+import math
 
 BLENDER_REFERENCE_EDGE = 0.01  # m
 
@@ -54,6 +75,9 @@ FABRICS = {
         "roughness": 0.95,
         "hem_bending_factor": 3.0,
         "blender": {"tension": 0.0135, "shear": 0.0054, "bending": 0.0014, "air_damping": 9e-05},
+        "tensile_stiffness": 600,
+        "bending_rigidity": 4e-05,
+        "poissons_ratio": 0.3,
     },
     "cotton_waffle": {
         "label": "Cotton waffle weave",
@@ -63,6 +87,9 @@ FABRICS = {
         "roughness": 0.9,
         "hem_bending_factor": 3.0,
         "blender": {"tension": 0.0066, "shear": 0.00264, "bending": 0.000381, "air_damping": 7.33e-05},
+        "tensile_stiffness": 800,
+        "bending_rigidity": 1.5e-05,
+        "poissons_ratio": 0.3,
     },
     "cotton_plain": {
         "label": "Cotton plain weave",
@@ -72,6 +99,9 @@ FABRICS = {
         "roughness": 0.85,
         "hem_bending_factor": 4.0,
         "blender": {"tension": 0.0042, "shear": 0.00168, "bending": 0.000127, "air_damping": 4.67e-05},
+        "tensile_stiffness": 1500,
+        "bending_rigidity": 6e-06,
+        "poissons_ratio": 0.3,
     },
     "cotton_percale": {
         "label": "Cotton percale (bed linen)",
@@ -81,6 +111,9 @@ FABRICS = {
         "roughness": 0.85,
         "hem_bending_factor": 4.0,
         "blender": {"tension": 0.0036, "shear": 0.00144, "bending": 7.8e-05, "air_damping": 4e-05},
+        "tensile_stiffness": 1500,
+        "bending_rigidity": 4e-06,
+        "poissons_ratio": 0.3,
     },
     "linen": {
         "label": "Linen",
@@ -90,6 +123,9 @@ FABRICS = {
         "roughness": 0.85,
         "hem_bending_factor": 3.0,
         "blender": {"tension": 0.0054, "shear": 0.00216, "bending": 0.000374, "air_damping": 6e-05},
+        "tensile_stiffness": 2500,
+        "bending_rigidity": 1.5e-05,
+        "poissons_ratio": 0.3,
     },
     "denim": {
         "label": "Denim (cotton twill, ~12 oz)",
@@ -99,6 +135,9 @@ FABRICS = {
         "roughness": 0.85,
         "hem_bending_factor": 2.0,
         "blender": {"tension": 0.016, "shear": 0.0064, "bending": 0.00208, "air_damping": 4e-05},
+        "tensile_stiffness": 4000,
+        "bending_rigidity": 0.00012,
+        "poissons_ratio": 0.3,
     },
     "fleece": {
         "label": "Polyester fleece",
@@ -108,6 +147,9 @@ FABRICS = {
         "roughness": 0.95,
         "hem_bending_factor": 2.0,
         "blender": {"tension": 0.005, "shear": 0.0015, "bending": 0.00065, "air_damping": 8.33e-05},
+        "tensile_stiffness": 200,
+        "bending_rigidity": 2e-05,
+        "poissons_ratio": 0.35,
     },
     "microfiber": {
         "label": "Microfiber (cleaning cloth)",
@@ -117,6 +159,9 @@ FABRICS = {
         "roughness": 0.9,
         "hem_bending_factor": 1.5,
         "blender": {"tension": 0.009, "shear": 0.0036, "bending": 0.000832, "air_damping": 0.0001},
+        "tensile_stiffness": 500,
+        "bending_rigidity": 1.5e-05,
+        "poissons_ratio": 0.3,
     },
     "polyester_knit": {
         "label": "Polyester knit (flag fabric)",
@@ -126,6 +171,9 @@ FABRICS = {
         "roughness": 0.6,
         "hem_bending_factor": 4.0,
         "blender": {"tension": 0.0023, "shear": 0.00069, "bending": 2.99e-05, "air_damping": 0.000115},
+        "tensile_stiffness": 600,
+        "bending_rigidity": 1.5e-06,
+        "poissons_ratio": 0.35,
     },
     "silk": {
         "label": "Silk (habotai / satin)",
@@ -135,6 +183,9 @@ FABRICS = {
         "roughness": 0.35,
         "hem_bending_factor": 4.0,
         "blender": {"tension": 0.0018, "shear": 0.00072, "bending": 7.8e-06, "air_damping": 4e-05},
+        "tensile_stiffness": 300,
+        "bending_rigidity": 1e-06,
+        "poissons_ratio": 0.3,
     },
     "wool_knit": {
         "label": "Wool knit (winter scarf)",
@@ -144,5 +195,16 @@ FABRICS = {
         "roughness": 0.95,
         "hem_bending_factor": 1.5,
         "blender": {"tension": 0.007, "shear": 0.0021, "bending": 0.00146, "air_damping": 0.00012},
+        "tensile_stiffness": 150,
+        "bending_rigidity": 3e-05,
+        "poissons_ratio": 0.35,
     },
 }
+
+
+def shell(fabric: dict) -> tuple[float, float]:
+    """(Young's modulus in Pa, thickness in m) of the thin shell with the
+    fabric's tensile stiffness and bending rigidity."""
+    K, B, nu = fabric["tensile_stiffness"], fabric["bending_rigidity"], fabric["poissons_ratio"]
+    t = math.sqrt(12 * (1 - nu * nu) * B / K)
+    return K / t, t

@@ -231,11 +231,14 @@ imperfect cut, spread across the piece.*
 | File | Content |
 |---|---|
 | `maillage_<preset>.usdc` | OpenUSD scene (Blender: File > Import > USD) |
+| `maillage_<preset>_omniphysics.usda` | the same scene with NVIDIA OmniPhysics surface deformables (Omniverse, Isaac Sim 5+): an OpenUSD layer over the main file, see [Engines](#engines) |
+| `maillage_<preset>.xml` | the same scene as a MuJoCo model, one flex cloth per piece, see [Engines](#engines) |
 | `textures/<piece>.png` | pattern texture of each piece |
 | `pieces.csv` | per piece: fabric, shape, pattern, size, corner radius, mass, mesh metrics |
 | `summary.json` | counts by fabric, pattern, shape and format; mass and mesh statistics |
 | `sheet.png` | flat preview (`maillage preview`) |
 | `drop_test/` | `drop_test.json`, `draped.usdc`, `drop_test.png`, `drop_test.gif` and `frames/` (`maillage drop-test`) |
+| `sim_test/` | `sim_test.json` and the MuJoCo model of the test, `mujoco_drape.xml` (`maillage sim-test`) |
 
 ### OpenUSD layout
 
@@ -260,6 +263,7 @@ Each cloth mesh has `subdivisionScheme = none`, is double sided, and carries:
 | `maillage:arealDensity`, `maillage:mass`, `maillage:thickness`, `maillage:friction` | physical properties (SI units) |
 | `maillage:nominalSize`, `maillage:size`, `maillage:cornerRadius` | retail and actual size (m) |
 | `maillage:hemBendingFactor` | how much stiffer the hem is in bending |
+| `maillage:tensileStiffness`, `maillage:bendingRigidity`, `maillage:poissonsRatio` | engine-neutral stiffness: N/m, N·m (see [Engines](#engines)) |
 | `maillage:blender:*` | stiffness for Blender's cloth solver, for 1 cm edges (see [Blender values](#blender-values)) |
 
 OpenUSD has no standard schema for cloth simulation (`UsdPhysics` covers
@@ -360,6 +364,57 @@ softer fabrics, and kept low for all of them (see the
 [roadmap](#roadmap)). **The values are not calibrated** against measured
 fabric properties.
 
+## Engines
+
+The main file is engine-neutral; engine-specific exports are read back from
+it, so every engine sees the same piece.
+
+**Engine-neutral stiffness.** Each fabric has a tensile (membrane) stiffness
+K in N/m, a bending rigidity B in N·m and a Poisson's ratio: orders of
+magnitude from published ranges (B from 1e-6 N·m for silk to 1e-4 N·m for
+denim; K from 1e2 N/m for a knitted scarf to a few 1e3 N/m for wovens), not
+measurements. Shell models (MuJoCo, OmniPhysics) take a Young's modulus E and
+a thickness t; the pair with E·t = K and E·t³ / 12(1 − ν²) = B gives both
+exactly. That t is a bending thickness, not the fabric's real thickness:
+fabrics bend far more easily than a solid plate of the same thickness.
+
+| Engine | Export | Tested |
+|---|---|---|
+| Blender | the main file, through Blender's USD importer, with the `maillage:blender:*` stiffness | **yes**: `maillage drop-test`, every preset in CI |
+| MuJoCo | `maillage_<preset>.xml`: one flex per piece (`flexcomp`, triangle shell, `elastic2d="both"`), mass, friction | **yes**: `maillage sim-test`, every preset in CI |
+| NVIDIA OmniPhysics (Isaac Sim 5+) | `maillage_<preset>_omniphysics.usda`: surface deformables (`OmniPhysicsDeformableBodyAPI`, `OmniPhysicsSurfaceDeformableSimAPI`, `OmniPhysicsSurfaceDeformableMaterialAPI`), faces split into triangles | **structure only** (`python -m maillage.omniphysics`, OpenUSD validators): not simulated, OmniPhysics needs an NVIDIA RTX GPU |
+
+### MuJoCo drape test
+
+```bash
+pip install "maillage[sim]"
+maillage sim-test output/tea_towel --pieces 4
+```
+
+The same scenario and checks as the [Blender drape test](#blender-drape-test),
+built from the OpenUSD file only: drape on a clamped pedestal (or hang from
+the pinned vertices), 5 s, then finite values, stretch, penetration, at rest;
+plus **mass** (the flex's mass is the file's) and **solver** (no MuJoCo
+warning). The drape coefficient is measured.
+
+MuJoCo settings, found with the test (MuJoCo 3.17): the `discrete` integrator
+(the only one that integrates flex elasticity implicitly), a 0.5 ms time step
+(smaller when the membrane is stiff for the vertex mass, as for a small linen
+napkin), the CG solver with a tight tolerance. MuJoCo cannot put air drag on
+flex vertices in the XML: the test applies it as a force, 1 N·s/m³ per unit
+of cloth area, the order of real air drag at draping speeds. Not modelled in
+MuJoCo: self-collision, the stiffer hem (one stiffness per flex), wind.
+
+### OmniPhysics layer
+
+Open `maillage_<preset>_omniphysics.usda` in Omniverse or Isaac Sim: it
+sublayers the main file and adds a physics scene, the deformable-body and
+surface-simulation schemas on each cloth mesh (the mesh is both the body root
+and its simulation mesh), rest shape and triangles, and one physics material
+per fabric (Young's modulus, surface thickness, Poisson's ratio, density,
+friction). Not exported yet: the pinned vertices of a flag (they need an
+attachment) and the stiffer hem.
+
 ## Method in brief
 
 1. **Outline.** A rectangle with rounded corners or an ellipse, parametrised
@@ -396,10 +451,11 @@ preset.
 
 ## Limits
 
-- **Blender only, so far.** The drape test validates the assets in Blender's
-  cloth solver. Nothing is exported yet for NVIDIA OmniPhysics deformables
-  (Isaac Sim) or MuJoCo flex; the geometry and physical attributes are there,
-  the engine-specific schemas are not.
+- **OmniPhysics not simulated.** The OmniPhysics layer is checked for
+  structure and by the OpenUSD validators, but has not been run in Isaac Sim
+  (no NVIDIA GPU here); flags are not attached by their hoist corners there.
+- **Stiffness not calibrated.** The engine-neutral stiffness values are
+  orders of magnitude, not measurements of these fabrics.
 - **Fabrics drape alike.** Bending stiffness is kept low for every fabric
   (see the [roadmap](#roadmap)), and no value is calibrated against
   measurements (no Kawabata or Cusick data behind them).
@@ -423,9 +479,8 @@ preset.
    Blender's linear bending model, and other engines.
 2. Pre-draped and crumpled states as OpenUSD variants (the drape test already
    exports draped meshes), and folded states for laundry-folding tasks.
-3. Engine-neutral physical stiffness (tensile and bending rigidity in SI
-   units) with per-engine mappings, starting with OmniPhysics surface
-   deformables.
+3. A simulation run of the OmniPhysics layer in Isaac Sim, and attachments
+   for pinned vertices.
 4. Calibration against published fabric measurements.
 5. Simple garments from sewing patterns.
 
