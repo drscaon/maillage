@@ -8,6 +8,20 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Engine-neutral stiffness for every fabric, in SI units: tensile stiffness
+  (N/m), bending rigidity (N·m) and Poisson's ratio, written as
+  `maillage:tensileStiffness`, `maillage:bendingRigidity` and
+  `maillage:poissonsRatio`; `fabrics.shell()` gives the shell's Young's
+  modulus and thickness that match both.
+- MuJoCo export: `maillage_<preset>.xml`, one flex cloth per piece with shell
+  elasticity, mass and friction, read back from the OpenUSD file.
+- `maillage sim-test`: the drape test in MuJoCo, same scenario and checks as
+  the Blender test, plus mass and solver checks. Extra `sim`; CI runs it on
+  every preset.
+- NVIDIA OmniPhysics export: `maillage_<preset>_omniphysics.usda`, an OpenUSD
+  layer over the main file with surface deformables (Isaac Sim 5+);
+  `python -m maillage.omniphysics` checks its structure (CI, every preset).
+  Not simulated yet (needs an NVIDIA RTX GPU).
 - `python -m maillage.validate FILE_OR_FOLDER`: every OpenUSD `UsdValidation` validator
   (what `usdchecker` runs) on each file and each variant; the tests and a CI job
   (every preset) require no error and no warning.

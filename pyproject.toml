@@ -29,7 +29,9 @@ dependencies = [
 render = ["matplotlib>=3.7", "pillow>=9"]
 # Blender as a Python module: the bpy wheels exist for one Python version only
 blender = ["bpy>=5.1; python_version == '3.13'"]
-dev = ["pytest>=7", "ruff>=0.5", "matplotlib>=3.7", "pillow>=9"]
+# MuJoCo drape test (maillage sim-test)
+sim = ["mujoco>=3.2"]
+dev = ["pytest>=7", "ruff>=0.5", "matplotlib>=3.7", "pillow>=9", "mujoco>=3.2"]
 
 [project.urls]
 Homepage = "https://github.com/drscaon/maillage"
