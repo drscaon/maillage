@@ -381,6 +381,19 @@ fabric properties.
    wavy cut shows as a pattern not quite parallel to the edge, as on real
    pieces.
 
+## OpenUSD compliance
+
+```bash
+python -m maillage.validate output/tea_towel
+```
+
+This runs every validator of OpenUSD's `UsdValidation` registry on each file,
+the checks `usdchecker` runs: composition, stage metadata (meters, Z up),
+geometry, material bindings, shaders, UsdPhysics rigid bodies and colliders.
+Each file is checked once per variant, since a variant that is not selected is
+not composed. The tests and CI require no error and no warning, on every
+preset.
+
 ## Limits
 
 - **Blender only, so far.** The drape test validates the assets in Blender's
