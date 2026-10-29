@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Released on PyPI (`pip install maillage`) by the release workflow, through Trusted Publishing.
+- README images and links use absolute URLs, so that they show on PyPI; the README links to Primvaria, the suite the project belongs to.
+
 ## [0.1.0b1] - 2026-10-23 (beta)
 
 First beta, and first published version (0.1.0a1 was never released; its
