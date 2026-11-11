@@ -35,13 +35,14 @@ here and read by the Blender drop test (maillage/blender/drop_test.py).
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 
 from . import __version__
-from .contract import set_group, write_identity
+from .contract import set_group, write_identity, write_variation
 from .fabrics import BLENDER_REFERENCE_EDGE, FABRICS
 from .ground import ground, physics_scene
 from .texture import srgb_to_linear
@@ -95,6 +96,7 @@ def export_stage(path: str | Path, scene) -> Path:
     world.GetPrim().SetCustomDataByKey("maillage:version", __version__)
     world.GetPrim().SetCustomDataByKey("maillage:seed", int(scene.seed))
     set_group(world.GetPrim(), assembly=True)
+    aspects = [name for name, on in asdict(scene.variations).items() if on]
     UsdGeom.Scope.Define(stage, "/World/Looks")
     set_group(UsdGeom.Scope.Define(stage, "/World/Cloths").GetPrim())
 
@@ -128,6 +130,7 @@ def export_stage(path: str | Path, scene) -> Path:
         write_identity(
             prim, name=p.name, preset=scene.preset_key, seed=scene.seed, identifier=f"./{path.name}"
         )
+        write_variation(prim, aspects, p.variation)
         _attr(prim, "maillage:fabric", _F.String, p.fabric)
         _attr(prim, "maillage:pattern", _F.String, p.pattern["pattern"])
         _attr(prim, "maillage:shape", _F.Token, p.shape)
