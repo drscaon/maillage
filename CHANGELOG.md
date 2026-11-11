@@ -6,6 +6,13 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Breaking changes
+
+- The stage no longer carries `maillage:preset`, `maillage:version` and
+  `maillage:seed` as custom data on `/World`: each piece has them as
+  `primvaria:preset`, `primvaria:version` and `primvaria:seed` (Primvaria
+  contract).
+
 ### Added
 
 - Ground truth of the variation, in the file (Primvaria contract, variation

@@ -41,7 +41,6 @@ from pathlib import Path
 import numpy as np
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 
-from . import __version__
 from .contract import set_group, write_identity, write_variation
 from .fabrics import BLENDER_REFERENCE_EDGE, FABRICS
 from .ground import ground, physics_scene
@@ -92,9 +91,6 @@ def export_stage(path: str | Path, scene) -> Path:
     UsdPhysics.SetStageKilogramsPerUnit(stage, 1.0)
     world = UsdGeom.Xform.Define(stage, "/World")
     stage.SetDefaultPrim(world.GetPrim())
-    world.GetPrim().SetCustomDataByKey("maillage:preset", scene.preset["label"])
-    world.GetPrim().SetCustomDataByKey("maillage:version", __version__)
-    world.GetPrim().SetCustomDataByKey("maillage:seed", int(scene.seed))
     set_group(world.GetPrim(), assembly=True)
     aspects = [name for name, on in asdict(scene.variations).items() if on]
     UsdGeom.Scope.Define(stage, "/World/Looks")
