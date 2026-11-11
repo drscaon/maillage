@@ -28,7 +28,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .mujoco_model import AIR_DAMPING, RADIUS, flex_xml, model_xml, timestep
+from .mujoco_model import AIR_DAMPING, RADIUS, flex_xml, floor_friction, model_xml, timestep
 from .usd_reader import Piece, find_usd, read_pieces
 
 PEDESTAL_HEIGHT = 0.75
@@ -112,7 +112,7 @@ def run(target, out_dir=None, pieces=4, seconds=5.0, seed=1) -> dict:
                 'contype="0" conaffinity="0" rgba="0.6 0.6 0.62 1"/>'
             )
         setups.append((p, pts, scenario, x0))
-    xml = model_xml(flexes, "".join(world), timestep=dt)
+    xml = model_xml(flexes, "".join(world), timestep=dt, floor=floor_friction(usd))
     (out / "mujoco_drape.xml").write_text(xml + "\n", encoding="utf-8")
     m = mujoco.MjModel.from_xml_string(xml)
     d = mujoco.MjData(m)

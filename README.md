@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://github.com/drscaon/maillage/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/drscaon/maillage/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://pypi.org/project/maillage/"><img alt="PyPI" src="https://img.shields.io/pypi/v/maillage"></a>
-  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB">
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%2B-3776AB">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green">
   <a href="https://primvaria.com"><img alt="Part of Primvaria" src="https://img.shields.io/badge/suite-Primvaria-0f6e74"></a>
 </p>
@@ -78,10 +78,15 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e ".[render]"        # add ",dev" for tests and linting
 ```
 
-Requires Python 3.10+. For the Blender drape test, either put Blender on the
+Requires Python 3.11+ and `usd-core` 26.5+ (the OpenUSD bindings). For the Blender drape test, either put Blender on the
 PATH, or install Blender as a Python module (`pip install -e ".[blender]"`,
 Python 3.13 only, as the `bpy` wheels exist for one Python version). Tested
 with Blender 5.2; Blender 4.2 or later should work.
+
+Earlier `usd-core` wheels generate the same files, but their OpenUSD
+validators do not load (25.5 ships without the validator
+libraries, 25.8 and 25.11 without the UsdPreviewSurface definitions), and CI
+tests both 26.5 and the newest release.
 
 ## Usage
 
@@ -258,8 +263,26 @@ Z up, metres, kilograms. `/World` is the default prim.
 /World
   /Looks/<piece>      UsdPreviewSurface + UsdUVTexture (textures/<piece>.png)
   /Cloths/<piece>     UsdGeom.Mesh, flat on the ground, laid out in rows
-  /Ground             collision ground (UsdPhysics.CollisionAPI)
+  /PhysicsScene       gravity (shared, see below)
+  /Ground             the shared ground, its top face at z = 0 (CollisionAPI)
+  /GroundMaterial     its physics material
 ```
+
+### Ground and physics scene (the same in every Primvaria project)
+
+Every file with physics carries the same two prims, so that assets from
+different generators can share one scene and every engine gets the same floor:
+
+| Prim | What it is |
+|---|---|
+| `/World/PhysicsScene` | gravity 9.81 m/s² along −Z |
+| `/World/Ground` | a static box (`UsdGeom.Cube`, `CollisionAPI`), its top face at z = 0, 2 cm thick, covering the content with 0.5 m to spare on each side (1 m × 1 m at least), grey and rendered, no PhysX attributes (engines derive their contact offsets) |
+| `/World/GroundMaterial` | its physics material: static friction 0.6, dynamic friction 0.5, restitution 0.1, a wooden or concrete floor |
+
+The code is one file, `ground.py`, identical in Granulaire, Maillage, Filaire
+and Quincaillerie; a test checks every generated file against it. The MuJoCo
+checks and the Blender rigid-body checks take the ground's friction from the
+file (Blender's cloth, in Maillage, has its own collision settings).
 
 Each cloth mesh has `subdivisionScheme = none`, is double sided, and carries:
 
@@ -417,7 +440,7 @@ the pinned vertices), 5 s, then finite values, stretch, penetration, at rest;
 plus **mass** (the flex's mass is the file's) and **solver** (no MuJoCo
 warning). The drape coefficient is measured.
 
-MuJoCo settings, found with the test (MuJoCo 3.17): the `discrete` integrator
+MuJoCo settings, found with the test (MuJoCo 3.17; CI runs it on MuJoCo 4): the `discrete` integrator
 (the only one that integrates flex elasticity implicitly), a 0.5 ms time step
 (smaller when the membrane is stiff for the vertex mass, as for a small linen
 napkin), the CG solver with a tight tolerance. MuJoCo cannot put air drag on
@@ -531,7 +554,7 @@ GitHub Actions runs these workflows (`.github/workflows/`):
 
 | Workflow | When | What |
 |---|---|---|
-| `ci.yml` | every push to `main`, every pull request | `ruff check` and `ruff format --check`; `pytest` on Python 3.10–3.13 (Linux) and 3.12 (macOS, Windows); a command-line smoke test; **the Blender drape test of every preset** with the `bpy` module (Python 3.13, Linux), reports kept as a run artifact; build the wheel and sdist, `twine check`, install the wheel in a clean environment. |
+| `ci.yml` | every push to `main`, every pull request | `ruff check` and `ruff format --check`; `pytest` on Python 3.11–3.13 (Linux) and 3.12 (macOS, Windows); a command-line smoke test; **the Blender drape test of every preset** with the `bpy` module (Python 3.13, Linux), reports kept as a run artifact; build the wheel and sdist, `twine check`, install the wheel in a clean environment. |
 | `release.yml` | a pushed tag `v*` | checks the tag matches the version in `pyproject.toml`, tests, builds, then creates the GitHub release with the packages attached and the notes taken from `CHANGELOG.md`. Versions with `a`, `b` or `rc` are marked as pre-releases. |
 | Dependabot | monthly | pull requests to update the GitHub Actions and the Python dependencies. |
 

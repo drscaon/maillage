@@ -5,7 +5,9 @@ Stage layout (Z up, metres, kilograms):
     /World                       default prim
       /Looks/<piece>             UsdPreviewSurface material with the pattern texture
       /Cloths/<piece>            UsdGeom.Mesh, flat, laid on the ground
-      /Ground                    collision ground (UsdPhysics.CollisionAPI)
+      /PhysicsScene              gravity 9.81 m/s² along -Z (ground.py, shared by Primvaria)
+      /Ground                    the shared ground: a 2 cm box, its top at z = 0
+      /GroundMaterial            its physics material
 
 Each cloth mesh carries:
 
@@ -40,6 +42,7 @@ from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 
 from . import __version__
 from .fabrics import BLENDER_REFERENCE_EDGE, FABRICS
+from .ground import ground, physics_scene
 from .texture import srgb_to_linear
 
 _F = Sdf.ValueTypeNames
@@ -72,19 +75,11 @@ def _material(stage, path: str, texture_path: str, roughness: float) -> UsdShade
 
 
 def _ground(stage, scene) -> None:
+    """The shared ground (ground.py) under the pieces laid out on the floor."""
     xs = [p.position[0] for p in scene.pieces]
     ys = [p.position[1] for p in scene.pieces]
-    m = 1.0 + max(max(p.length, p.width) for p in scene.pieces)
-    lo = Gf.Vec3f(min(xs) - m, min(ys) - m, 0.0)
-    hi = Gf.Vec3f(max(xs) + m, max(ys) + m, 0.0)
-    g = UsdGeom.Mesh.Define(stage, "/World/Ground")
-    g.CreatePointsAttr([lo, Gf.Vec3f(hi[0], lo[1], 0), hi, Gf.Vec3f(lo[0], hi[1], 0)])
-    g.CreateFaceVertexCountsAttr([4])
-    g.CreateFaceVertexIndicesAttr([0, 1, 2, 3])
-    g.CreateExtentAttr([lo, hi])
-    g.CreateSubdivisionSchemeAttr(UsdGeom.Tokens.none)
-    g.CreateDisplayColorAttr([Gf.Vec3f(0.18, 0.18, 0.18)])
-    UsdPhysics.CollisionAPI.Apply(g.GetPrim())
+    r = max(max(p.length, p.width) for p in scene.pieces) / 2
+    ground(stage, (min(xs) - r, min(ys) - r), (max(xs) + r, max(ys) + r))
 
 
 def export_stage(path: str | Path, scene) -> Path:
@@ -156,6 +151,7 @@ def export_stage(path: str | Path, scene) -> Path:
         UsdShade.MaterialBindingAPI.Apply(prim)
         UsdShade.MaterialBindingAPI(prim).Bind(mat)
 
+    physics_scene(stage)
     _ground(stage, scene)
     stage.GetRootLayer().Save()
     return path

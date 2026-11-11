@@ -24,7 +24,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+from pxr import Usd
 
+from ..ground import read_ground
 from .usd_reader import Piece, find_usd, read_pieces
 
 TIMESTEP = 5e-4  # s
@@ -69,12 +71,20 @@ def flex_xml(piece: Piece, points_world: np.ndarray, pinned=(), timestep: float 
     )
 
 
-def model_xml(flexes: list[str], world: str = "", timestep: float = TIMESTEP, comment: str = "") -> str:
+def floor_friction(usd) -> float:
+    """The dynamic friction of the file's ground material (ground.py)."""
+    g = read_ground(Usd.Stage.Open(str(usd)))
+    return g["dynamic_friction"] if g else 0.5
+
+
+def model_xml(
+    flexes: list[str], world: str = "", timestep: float = TIMESTEP, comment: str = "", floor: float = 0.5
+) -> str:
     return (
         f'<mujoco model="maillage">{f"<!-- {comment} -->" if comment else ""}'
         f'<option timestep="{timestep}" integrator="discrete" solver="CG" tolerance="1e-10" '
         'iterations="100"/>'
-        f'<worldbody><geom name="floor" type="plane" size="0 0 0.05" friction="0.5"/>{world}'
+        f'<worldbody><geom name="floor" type="plane" size="0 0 0.05" friction="{floor:.4g}"/>{world}'
         f"{''.join(flexes)}</worldbody></mujoco>"
     )
 
@@ -96,5 +106,7 @@ def export(usd, out_xml=None) -> Path:
         f"(maillage's drape test applies {AIR_DAMPING} N s/m3 per unit area) and pinned vertices "
         "(the 'pin' primvar of the USD file)."
     )
-    out.write_text(model_xml(flexes, timestep=dt, comment=note) + "\n", encoding="utf-8")
+    out.write_text(
+        model_xml(flexes, timestep=dt, comment=note, floor=floor_friction(usd)) + "\n", encoding="utf-8"
+    )
     return out

@@ -9,7 +9,7 @@ Core OpenUSD has no deformable-body schema yet; this follows NVIDIA's
 OmniPhysics deformable schema, applied by name (the file stays valid OpenUSD
 for any tool):
 
-  /World/PhysicsScene                 UsdPhysics scene
+  /World/PhysicsScene                 UsdPhysics scene (from the file, shared ground.py)
   /World/Cloths/<piece>               the cloth mesh is the body root and its
                                       simulation mesh (the schema allows the
                                       simulation mesh at the root):
@@ -89,8 +89,7 @@ def write_overlay(usd) -> Path:
     UsdGeom.SetStageMetersPerUnit(stage, 1.0)
     UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
     UsdPhysics.SetStageKilogramsPerUnit(stage, 1.0)
-    stage.SetDefaultPrim(stage.GetPrimAtPath("/World"))
-    UsdPhysics.Scene.Define(stage, "/World/PhysicsScene")
+    stage.SetDefaultPrim(stage.GetPrimAtPath("/World"))  # the physics scene comes from the file
     materials = {}
     for prim in stage.GetPrimAtPath("/World/Cloths").GetChildren():
         if not prim.IsA(UsdGeom.Mesh):
