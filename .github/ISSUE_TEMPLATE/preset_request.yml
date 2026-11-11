@@ -1,5 +1,5 @@
-name: Cloth preset request
-description: Ask for a new textile piece or fabric
+name: "Cloth preset request"
+description: "Ask for a new textile piece or fabric"
 labels: [preset-request]
 body:
   - type: markdown
