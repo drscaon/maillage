@@ -41,6 +41,7 @@ import numpy as np
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 
 from . import __version__
+from .contract import set_group, write_identity
 from .fabrics import BLENDER_REFERENCE_EDGE, FABRICS
 from .ground import ground, physics_scene
 from .texture import srgb_to_linear
@@ -93,8 +94,9 @@ def export_stage(path: str | Path, scene) -> Path:
     world.GetPrim().SetCustomDataByKey("maillage:preset", scene.preset["label"])
     world.GetPrim().SetCustomDataByKey("maillage:version", __version__)
     world.GetPrim().SetCustomDataByKey("maillage:seed", int(scene.seed))
+    set_group(world.GetPrim(), assembly=True)
     UsdGeom.Scope.Define(stage, "/World/Looks")
-    UsdGeom.Scope.Define(stage, "/World/Cloths")
+    set_group(UsdGeom.Scope.Define(stage, "/World/Cloths").GetPrim())
 
     for p in scene.pieces:
         fab = FABRICS[p.fabric]
@@ -123,6 +125,9 @@ def export_stage(path: str | Path, scene) -> Path:
         )
 
         prim = mesh.GetPrim()
+        write_identity(
+            prim, name=p.name, preset=scene.preset_key, seed=scene.seed, identifier=f"./{path.name}"
+        )
         _attr(prim, "maillage:fabric", _F.String, p.fabric)
         _attr(prim, "maillage:pattern", _F.String, p.pattern["pattern"])
         _attr(prim, "maillage:shape", _F.Token, p.shape)

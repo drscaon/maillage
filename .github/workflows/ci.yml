@@ -143,6 +143,8 @@ jobs:
         run: python -m maillage.validate ci-usd
       - name: Structure of the OmniPhysics layers
         run: python -m maillage.omniphysics ci-usd
+      - name: Check every file against the Primvaria contract
+        run: python -m maillage.conformance ci-usd
 
   usd-floor:
     name: Oldest supported OpenUSD (usd-core 26.5)

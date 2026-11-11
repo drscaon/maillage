@@ -492,6 +492,22 @@ Each file is checked once per variant, since a variant that is not selected is
 not composed. The tests and CI require no error and no warning, on every
 preset.
 
+## Primvaria contract
+
+```bash
+python -m maillage.conformance output/tea_towel
+```
+
+Maillage is part of [Primvaria](https://primvaria.com) and follows its
+[mission](https://github.com/drscaon/primvaria/blob/main/MISSION.md) and its
+[OpenUSD contract](https://github.com/drscaon/primvaria/blob/main/docs/contract.md),
+version 0, which the four generators share. Every piece is an asset any tool can find without knowing Maillage: a model of kind
+`component` with `assetInfo` (name, identifier, version) and the attributes
+`primvaria:contract`, `primvaria:generator`, `primvaria:version`,
+`primvaria:preset` and `primvaria:seed`; `/World` is an `assembly` and `/World/Cloths` a group. The command above checks
+the stage units, the model hierarchy and this identity; the tests and CI
+require it on every preset.
+
 ## Limits
 
 - **OmniPhysics not simulated.** The OmniPhysics layer is checked for
