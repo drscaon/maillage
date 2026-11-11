@@ -18,6 +18,12 @@ and the project uses [Semantic Versioning](https://semver.org/).
   units, model hierarchy, identity). Run in the tests and, in CI, on every
   preset.
 
+### Removed
+
+- `MUJOCO_LOG.TXT`, a MuJoCo warning log from a development run of 29 October
+  that had been committed by mistake; it is now ignored by git. The current
+  drape test writes no such warning.
+
 ## [0.2.0b1] - 2026-11-11 (beta)
 
 ### Breaking changes
