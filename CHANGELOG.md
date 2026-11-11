@@ -8,6 +8,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Ground truth of the variation, in the file (Primvaria contract, variation
+  model): `primvaria:variation:aspects`, the aspects that were switched on, and
+  one `primvaria:variation:<name>` per drawn value (`length_m`, `width_m`, `format_length_m`, `corner_radius_m`, `cut_amplitudes_m`, `cut_skew_deg`, `fabric`, `pattern`, `colors`…).
+  `python -m maillage.conformance` requires the aspects on every asset.
 - `CONTRIBUTING.md`, issue templates (bug report, cloth preset request),
   `SECURITY.md` and `CITATION.cff`.
 - Primvaria OpenUSD contract, version 0

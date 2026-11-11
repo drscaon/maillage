@@ -52,6 +52,7 @@ class Piece:
     mass: float
     image: np.ndarray
     position: tuple = (0.0, 0.0, 0.0)
+    variation: dict = field(default_factory=dict)  # what was drawn: the piece's ground truth
 
     @property
     def color(self) -> np.ndarray:
@@ -173,7 +174,37 @@ def make_piece(
         metrics=met,
         mass=fab["areal_density"] * met["area_m2"],
         image=texture.render(pattern, L, W, _rng(seed, index, "weave")),
+        variation=_drawn(fmt, L, W, outline.corner_radius, cut, fabric, pattern),
     )
+
+
+def _drawn(
+    fmt: dict, length: float, width: float, radius: float, cut: Cut, fabric: str, pattern: dict
+) -> dict:
+    """What was drawn for a piece (written as primvaria:variation:*): its format and size,
+    its corners, its cut, its fabric, its pattern and colours."""
+    colors = pattern.get("colors") or [pattern["base"], pattern["accent"]]
+    out = {
+        "format_shape": fmt["shape"],
+        "format_length_m": fmt["length"] / 100,
+        "format_width_m": fmt["width"] / 100,
+        "length_m": float(length),
+        "width_m": float(width),
+        "corner_radius_m": float(radius),
+        "cut_amplitudes_m": [float(a) for a in cut.amplitudes],
+        "cut_cycles": [float(c) for c in cut.cycles],
+        "cut_skew_deg": math.degrees(cut.skew),
+        "fabric": fabric,
+        "pattern": pattern["pattern"],
+        "colors": [str(c) for c in colors],
+    }
+    # the pattern's own drawn sizes (periods, bands, insets), in metres
+    for key, value in pattern.items():
+        if isinstance(value, bool):
+            out[f"pattern_{key}"] = value
+        elif isinstance(value, float):
+            out[f"pattern_{key}_m"] = value
+    return out
 
 
 def _layout(pieces: list, gap: float = 0.1) -> None:
