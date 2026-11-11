@@ -78,10 +78,15 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e ".[render]"        # add ",dev" for tests and linting
 ```
 
-Requires Python 3.10+. For the Blender drape test, either put Blender on the
+Requires Python 3.10+ and `usd-core` 26.5+ (the OpenUSD bindings). For the Blender drape test, either put Blender on the
 PATH, or install Blender as a Python module (`pip install -e ".[blender]"`,
 Python 3.13 only, as the `bpy` wheels exist for one Python version). Tested
 with Blender 5.2; Blender 4.2 or later should work.
+
+Earlier `usd-core` wheels generate the same files, but their OpenUSD
+validators do not load (25.5 ships without the validator
+libraries, 25.8 and 25.11 without the UsdPreviewSurface definitions), and CI
+tests both 26.5 and the newest release.
 
 ## Usage
 
