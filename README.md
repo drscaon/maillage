@@ -422,7 +422,7 @@ the pinned vertices), 5 s, then finite values, stretch, penetration, at rest;
 plus **mass** (the flex's mass is the file's) and **solver** (no MuJoCo
 warning). The drape coefficient is measured.
 
-MuJoCo settings, found with the test (MuJoCo 3.17): the `discrete` integrator
+MuJoCo settings, found with the test (MuJoCo 3.17; CI runs it on MuJoCo 4): the `discrete` integrator
 (the only one that integrates flex elasticity implicitly), a 0.5 ms time step
 (smaller when the membrane is stiff for the vertex mass, as for a small linen
 napkin), the CG solver with a tight tolerance. MuJoCo cannot put air drag on

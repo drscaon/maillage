@@ -28,6 +28,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- MuJoCo 4 (`mujoco>=4.0`, was 3.2) for the `sim` and `dev` extras: the version CI
+  tests; MuJoCo 3 is no longer supported.
 - `usd-core` 26.5 or later (was 24.0): the OpenUSD validators do not load from
   earlier wheels (25.5 lacks the validator libraries, 25.8 and 25.11 the
   UsdPreviewSurface definitions), and 24.x has no `UsdValidation` at all. A CI
