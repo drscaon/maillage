@@ -8,6 +8,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- `CONTRIBUTING.md`, issue templates (bug report, cloth preset request),
+  `SECURITY.md` and `CITATION.cff`.
 - Primvaria OpenUSD contract, version 0
   ([docs/contract.md](https://github.com/drscaon/primvaria/blob/main/docs/contract.md)):
   every piece is an asset any tool can find without knowing Maillage: a model of kind `component` with `assetInfo` (name,
