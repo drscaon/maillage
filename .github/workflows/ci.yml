@@ -113,6 +113,8 @@ jobs:
             maillage generate --preset "$preset" --count 1 --vertices 400 --out ci-sim > /dev/null
           done
           maillage sim-test ci-sim/* --pieces 1
+      - name: Fabrics do not drape alike (the same sample of every fabric)
+        run: maillage fabric-test --out ci-sim/fabric_test
       - uses: actions/upload-artifact@v7
         if: always()
         with:
@@ -120,6 +122,7 @@ jobs:
           path: |
             ci-sim/*/sim_test/sim_test.json
             ci-sim/*/sim_test/mujoco_drape.xml
+            ci-sim/fabric_test/fabric_test.json
           retention-days: 14
 
   openusd:

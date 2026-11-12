@@ -366,9 +366,11 @@ same 40 cm square was draped in each (`maillage generate --preset napkin
 | Mass of the square | 10 g | 18 g | 22 g | 29 g | 72 g | 64 g |
 | Drape coefficient | 0.37 | 0.35 | 0.42 | 0.40 | 0.38 | 0.42 |
 
-In this version the fabrics differ in mass, thickness, friction and look
-much more than in drape: the drape coefficients stay within 0.35–0.42,
-where real silk and denim are far apart (see the [roadmap](#roadmap)).
+In Blender the fabrics differ in mass, thickness, friction and look much
+more than in drape: the drape coefficients stay within 0.35–0.42, where real
+silk and denim are far apart (see the [roadmap](#roadmap)). In MuJoCo, with
+the engine-neutral stiffness, they do not drape alike: see the
+[fabric drape test](#fabric-drape-test).
 
 ![Four 40 cm squares (silk, plain cotton, linen, denim) falling onto their pedestals](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/drape_fabrics.gif)
 
@@ -407,7 +409,7 @@ stands, as on the [Primvaria engine matrix](https://primvaria.com/#engines):
 |---|---|
 | OpenUSD validators (`usdchecker`) | **tested**: every preset, OmniPhysics layer included, in CI |
 | Blender | **tested**: drape test of every preset (`maillage drop-test`) |
-| MuJoCo | **tested**: flex export and drape test of every preset (`maillage sim-test`) |
+| MuJoCo | **tested**: flex export and drape test of every preset (`maillage sim-test`); the fabrics drape differently (`maillage fabric-test`) |
 | NVIDIA OmniPhysics (Isaac Sim 5+) | surface deformables exported, structure checked, not simulated yet |
 
 The main file is engine-neutral; engine-specific exports are read back from
@@ -448,6 +450,52 @@ napkin), the CG solver with a tight tolerance. MuJoCo cannot put air drag on
 flex vertices in the XML: the test applies it as a force, 1 N·s/m³ per unit
 of cloth area, the order of real air drag at draping speeds. Not modelled in
 MuJoCo: self-collision, the stiffer hem (one stiffness per flex), wind.
+
+### Fabric drape test
+
+```bash
+maillage fabric-test                                  # every fabric, about 4 minutes on one CPU
+maillage fabric-test --fabric silk,cotton_plain,denim
+```
+
+Do the fabrics drape differently, as real ones do? This drapes the same
+sample of each fabric in MuJoCo, a 30 cm disc on an 18 cm pedestal as in a
+Cusick drape tester, each in its own simulation, and measures its drape
+coefficient (1: the disc stays flat; 0: it hangs straight down). MuJoCo
+4.0.1, 300 vertices, 4 s:
+
+| Fabric | Bending length | Tensile stiffness | Drape coefficient |
+|---|---|---|---|
+| `polyester_knit` | 1.10 cm | 600 N/m | 0.51 |
+| `silk` | 1.19 cm | 300 N/m | 0.54 |
+| `microfiber` | 1.72 cm | 500 N/m | 0.57 |
+| `wool_knit` | 2.06 cm | 150 N/m | 0.61 |
+| `fleece` | 2.01 cm | 200 N/m | 0.62 |
+| `cotton_waffle` | 1.91 cm | 800 N/m | 0.63 |
+| `cotton_terry` | 2.08 cm | 600 N/m | 0.64 |
+| `cotton_plain` | 1.63 cm | 1500 N/m | 0.67 |
+| `cotton_percale` | 1.50 cm | 1500 N/m | 0.67 |
+| `linen` | 2.04 cm | 2500 N/m | 0.74 |
+| `denim` | 3.13 cm | 4000 N/m | 0.83 |
+
+The bending length is Pierce's, (bending rigidity / weight per unit
+area)^(1/3): the length over which a fabric bends under its own weight. The
+drape coefficient rises with it, and with the tensile stiffness: to drape in
+folds a disc must also shear in its plane, which knits (low tensile
+stiffness) do more easily than wovens. That is the dependence Cusick found on
+real fabrics, on bending length and shear stiffness
+([Cusick, 1965](https://typeset.io/papers/46-the-dependence-of-fabric-drape-on-bending-and-shear-3ppgh8xdba)).
+
+The test passes when every sample passes the checks of the drape test, silk,
+plain cotton and denim drape in that order at least 0.05 apart, and the
+fabrics spread over at least 0.2 (here 0.32). CI runs it on every fabric.
+
+What it does not show: the values are not calibrated, so a fabric's
+coefficient is not the one a Cusick tester would measure on it, and MuJoCo
+has no self-collision here, so folds can pass through each other. The mesh
+matters within about ±0.04: silk gives 0.52 to 0.59 and denim 0.83 to 0.89
+between 300 and 1200 vertices, which leaves the order and the spread
+unchanged.
 
 ### OmniPhysics layer
 
@@ -529,9 +577,13 @@ generators, and the command above fails when the table and the files disagree.
   (no NVIDIA GPU here); flags are not attached by their hoist corners there.
 - **Stiffness not calibrated.** The engine-neutral stiffness values are
   orders of magnitude, not measurements of these fabrics.
-- **Fabrics drape alike.** Bending stiffness is kept low for every fabric
-  (see the [roadmap](#roadmap)), and no value is calibrated against
-  measurements (no Kawabata or Cusick data behind them).
+- **Fabrics drape alike in Blender.** Blender's bending stiffness is kept
+  low for every fabric (see the [roadmap](#roadmap)): silk and denim drape
+  with nearly the same coefficient there. In MuJoCo they differ (see the
+  [fabric drape test](#fabric-drape-test)); use MuJoCo, or the
+  engine-neutral stiffness in another shell solver, when the fabric's drape
+  matters. No value is calibrated against measurements (no Kawabata or
+  Cusick data behind them).
 - **Flat pieces only.** No garments (sewn panels), no holes or grommets (a
   flag is pinned at its hoist corners instead), no folded or crumpled starting
   states, no wet cloth.
@@ -540,7 +592,9 @@ generators, and the command above fails when the table and the files disagree.
 
 ## Roadmap
 
-1. **Stiff fabrics that drape like real ones.** Blender's angular bending
+1. **Stiff fabrics that drape like real ones in Blender.** In MuJoCo the
+   fabrics already drape differently (see the
+   [fabric drape test](#fabric-drape-test)). Blender's angular bending
    model (the only one that works on triangle meshes) becomes unstable when
    the bending stiffness is high relative to the vertex mass, as with stiff
    fabrics on fine meshes: instead of settling, the cloth keeps vibrating,
