@@ -12,3 +12,9 @@ def contract_files(tmp_path_factory):
     out = tmp_path_factory.mktemp("contract")
     folder = write_outputs(generate_scene("tea_towel", count=2, vertices=300), out)
     return usd_files([folder])
+
+
+@pytest.fixture(scope="session")
+def pack_folder(tmp_path_factory):
+    """A pack freshly generated."""
+    return write_outputs(generate_scene("bath_towel", count=3, vertices=300), tmp_path_factory.mktemp("pack"))

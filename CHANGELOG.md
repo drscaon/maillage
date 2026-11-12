@@ -8,6 +8,11 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Breaking changes
 
+- Pack files (Primvaria contract): `pieces.csv` and `summary.json` are replaced by
+  `instances.csv` and `manifest.json`, the same in the four generators. The
+  table is read back from the OpenUSD files, one row per asset: identity,
+  aspects, `variation:<name>` and `measured:<name>` columns, then the
+  generator's own; the former summary is the manifest's `summary`.
 - The stage no longer carries `maillage:preset`, `maillage:version` and
   `maillage:seed` as custom data on `/World`: each piece has them as
   `primvaria:preset`, `primvaria:version` and `primvaria:seed` (Primvaria
@@ -15,6 +20,11 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- What was measured on each piece is written in the file as
+  `primvaria:measured:<name>` (`mass_kg`, `area_m2`, `perimeter_m`, `vertices`, `faces`, `edge_mean_mm`, `min_angle_deg`…).
+- `python -m maillage.conformance` also checks every pack it finds: the table must
+  say what the files say. `pack.py` and `tests/test_pack.py` are shared by the
+  four generators.
 - Ground truth of the variation, in the file (Primvaria contract, variation
   model): `primvaria:variation:aspects`, the aspects that were switched on, and
   one `primvaria:variation:<name>` per drawn value (`length_m`, `width_m`, `format_length_m`, `corner_radius_m`, `cut_amplitudes_m`, `cut_skew_deg`, `fabric`, `pattern`, `colors`…).

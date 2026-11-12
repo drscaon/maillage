@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import csv
-import json
 import math
 from collections import Counter
 from dataclasses import asdict, dataclass, field
@@ -16,6 +14,7 @@ from . import texture
 from .fabrics import FABRICS
 from .formats import describe, parse_formats
 from .outline import Cut, Outline
+from .pack import write_pack
 from .presets import PRESETS
 
 # independent random streams per piece, one per aspect: turning a variation off
@@ -296,8 +295,8 @@ def _minmeanmax(values):
 
 
 def write_outputs(scene: Scene, out_root: str | Path = "output") -> Path:
-    """Write the OpenUSD scene, its OmniPhysics layer and MuJoCo model, textures, a CSV table
-    and a summary. Returns the folder."""
+    """Write the OpenUSD scene, its OmniPhysics layer and MuJoCo model, the textures, and the
+    pack's table and manifest (instances.csv, manifest.json). Returns the folder."""
     from .usd_export import export_stage
 
     out = Path(out_root) / scene.preset_key
@@ -312,19 +311,7 @@ def write_outputs(scene: Scene, out_root: str | Path = "output") -> Path:
     write_overlay(usd)
     export_mjcf(usd)
 
-    with open(out / "pieces.csv", "w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        w.writerow(
-            ["name", "fabric", "shape", "pattern", "length_m", "width_m", "corner_radius_m", "mass_kg"]
-            + list(scene.pieces[0].metrics)
-        )
-        for p in scene.pieces:
-            w.writerow(
-                [p.name, p.fabric, p.shape, p.pattern["pattern"], f"{p.length:.4f}", f"{p.width:.4f}"]
-                + [f"{p.corner_radius:.4f}", f"{p.mass:.5f}"]
-                + [round(v, 5) if isinstance(v, float) else v for v in p.metrics.values()]
-            )
-    (out / "summary.json").write_text(
-        json.dumps(summarize(scene), indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+    # instances.csv (one row per piece, read back from the file) and manifest.json
+    aspects = [name for name, on in asdict(scene.variations).items() if on]
+    write_pack(out, scene.preset_key, scene.seed, aspects, summary=summarize(scene))
     return out
