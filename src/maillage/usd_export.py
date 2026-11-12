@@ -41,7 +41,7 @@ from pathlib import Path
 import numpy as np
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 
-from .contract import set_group, write_identity, write_variation
+from .contract import set_group, write_identity, write_measured, write_variation
 from .fabrics import BLENDER_REFERENCE_EDGE, FABRICS
 from .ground import ground, physics_scene
 from .texture import srgb_to_linear
@@ -127,6 +127,8 @@ def export_stage(path: str | Path, scene) -> Path:
             prim, name=p.name, preset=scene.preset_key, seed=scene.seed, identifier=f"./{path.name}"
         )
         write_variation(prim, aspects, p.variation)
+        # measured on the generated mesh: its mass and its mesh quality
+        write_measured(prim, {"mass_kg": float(p.mass), **p.metrics})
         _attr(prim, "maillage:fabric", _F.String, p.fabric)
         _attr(prim, "maillage:pattern", _F.String, p.pattern["pattern"])
         _attr(prim, "maillage:shape", _F.Token, p.shape)

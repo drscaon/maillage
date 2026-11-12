@@ -211,7 +211,8 @@ preset's size tolerance, cut, corners, fabric and patterns still apply. In
 Python, a format can also be a dict (`{"width": 50, "length": 70, "shape":
 "rect", "weight": 1}`) or a tuple (`(50, 70)`, `(150, 150, "round")`). With
 `--topology grid`, round and oval formats are skipped (at least one rectangle
-is needed). `summary.json` counts the pieces of each format drawn.
+is needed). `manifest.json` counts the pieces of each format drawn, in its
+summary.
 
 ### Variations
 
@@ -249,8 +250,8 @@ imperfect cut, spread across the piece.*
 | `maillage_<preset>_omniphysics.usda` | the same scene with NVIDIA OmniPhysics surface deformables (Omniverse, Isaac Sim 5+): an OpenUSD layer over the main file, see [Engines](#engines) |
 | `maillage_<preset>.xml` | the same scene as a MuJoCo model, one flex cloth per piece, see [Engines](#engines) |
 | `textures/<piece>.png` | pattern texture of each piece |
-| `pieces.csv` | per piece: fabric, shape, pattern, size, corner radius, mass, mesh metrics |
-| `summary.json` | counts by fabric, pattern, shape and format; mass and mesh statistics |
+| `instances.csv` | one row per piece, read back from the file: its identity, **every drawn value** (`variation:<name>`) and **every measured value** (`measured:<name>`): the ground truth |
+| `manifest.json` | what the pack is (contract, generator, version, preset, seed, aspects, files) and its summary: counts by fabric, pattern, shape and format; mass and mesh statistics |
 | `sheet.png` | flat preview (`maillage preview`) |
 | `drop_test/` | `drop_test.json`, `draped.usdc`, `drop_test.png`, `drop_test.gif` and `frames/` (`maillage drop-test`) |
 | `sim_test/` | `sim_test.json` and the MuJoCo model of the test, `mujoco_drape.xml` (`maillage sim-test`) |
@@ -513,6 +514,13 @@ What was drawn for each piece is in the file too, its ground truth:
 (`size`, `cut`, `corners`, `fabric`, `color`) and `primvaria:variation:<name>` holds each drawn value
 (`length_m`, `width_m`, `format_length_m`, `corner_radius_m`, `cut_amplitudes_m`, `cut_skew_deg`, `fabric`, `pattern`, `colors`…). An aspect that is switched off is still recorded, at its
 nominal value, and the other aspects keep their draws.
+
+What was measured on each piece once generated is there as well, as
+`primvaria:measured:<name>` (`mass_kg`, `area_m2`, `perimeter_m`, `vertices`, `faces`, `edge_mean_mm`, `min_angle_deg`…).
+The pack's `instances.csv` is read back from the OpenUSD files, one row per
+asset with the same names (`variation:<name>`, `measured:<name>`), and
+`manifest.json` says what the pack is; both have the same shape in the four
+generators, and the command above fails when the table and the files disagree.
 
 ## Limits
 
