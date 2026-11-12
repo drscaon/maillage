@@ -72,3 +72,24 @@ def test_mujoco_drape(towels):
     assert piece["checks"]["finite"] and piece["checks"]["mass"] and piece["checks"]["stretch"]
     assert piece["checks"]["penetration"] and piece["checks"]["solver"]
     assert 0 < piece["drape_coefficient"] < 1
+
+
+def test_fabrics_do_not_drape_alike(tmp_path):
+    pytest.importorskip("mujoco")
+    from maillage.sim.mujoco_test import ANCHOR_GAP, ANCHORS, bending_length, fabric_drape, fabric_lines
+
+    report = fabric_drape(ANCHORS, tmp_path, vertices=200, seconds=3.0)
+    assert report["passed"], fabric_lines(report)
+    drape = [r["drape_coefficient"] for r in report["fabrics"]]
+    assert drape[0] + ANCHOR_GAP <= drape[1] <= drape[2] - ANCHOR_GAP  # silk, plain cotton, denim
+    lengths = [bending_length(FABRICS[name]) for name in ANCHORS]
+    assert lengths == sorted(lengths) and 0.01 < lengths[0] < lengths[2] < 0.04
+    assert "spread" not in report["checks"]  # only when every fabric is tested
+    assert (tmp_path / "fabric_test.json").exists()
+
+
+def test_fabric_test_refuses_an_unknown_fabric(tmp_path):
+    from maillage.sim.mujoco_test import fabric_drape
+
+    with pytest.raises(ValueError, match="unknown fabric"):
+        fabric_drape(["velvet"], tmp_path)

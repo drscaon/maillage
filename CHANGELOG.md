@@ -20,6 +20,13 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- `maillage fabric-test` (`maillage.sim.mujoco_test.fabric_drape`): drapes the
+  same Cusick sample (a 30 cm disc on an 18 cm pedestal) of every fabric in
+  MuJoCo and checks that they do not drape alike: silk, plain cotton and
+  denim in that order, at least 0.05 apart, and a spread of at least 0.2.
+  Measured: 0.51 (polyester knit) to 0.83 (denim), where Blender gives
+  0.35–0.42 for all. Run in CI; the README has the table and what it does
+  not show.
 - What was measured on each piece is written in the file as
   `primvaria:measured:<name>` (`mass_kg`, `area_m2`, `perimeter_m`, `vertices`, `faces`, `edge_mean_mm`, `min_angle_deg`…).
 - `python -m maillage.conformance` also checks every pack it finds: the table must

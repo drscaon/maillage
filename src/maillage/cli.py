@@ -161,6 +161,20 @@ def _cmd_sim_test(args) -> int:
     return code
 
 
+def _cmd_fabric_test(args) -> int:
+    try:
+        import mujoco  # noqa: F401
+    except ImportError:
+        print('MuJoCo is needed: pip install "maillage[sim]"', file=sys.stderr)
+        return 2
+    from .sim import mujoco_test
+
+    report = mujoco_test.fabric_drape(args.fabric, args.out, args.vertices, args.seconds, args.seed)
+    print("\n".join(mujoco_test.fabric_lines(report)))
+    print(f"report: {report['report']}")
+    return 0 if report["passed"] else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
         prog="maillage",
@@ -244,6 +258,21 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--seconds", type=float, default=5.0, help="simulated time in s (default: 5)")
     s.add_argument("--seed", type=int, default=1, help="random drop poses (default: 1)")
     s.set_defaults(func=_cmd_sim_test)
+
+    f = sub.add_parser(
+        "fabric-test",
+        help="MuJoCo: drape the same sample of every fabric; they must not drape alike",
+    )
+    f.add_argument(
+        "--fabric", type=_fabrics, default=None, help="fabrics to test, comma-separated (default: all)"
+    )
+    f.add_argument("--out", default="output/fabric_test", help="report folder (default: output/fabric_test)")
+    f.add_argument(
+        "--vertices", type=_positive_int, default=300, help="vertices of the sample (default: 300)"
+    )
+    f.add_argument("--seconds", type=float, default=4.0, help="simulated time in s (default: 4)")
+    f.add_argument("--seed", type=int, default=1, help="random pose of the sample (default: 1)")
+    f.set_defaults(func=_cmd_fabric_test)
     return ap
 
 

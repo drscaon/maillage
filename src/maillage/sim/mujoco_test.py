@@ -223,3 +223,93 @@ def summary_lines(report) -> list[str]:
             + (f"failed: {', '.join(failed)}" if failed else "")
         )
     return lines
+
+
+# ------------------------------------------------------------------ one sample per fabric
+SAMPLE_CM = 30  # a Cusick sample: a 30 cm disc on an 18 cm pedestal (PEDESTAL_FRACTION)
+ANCHORS = ("silk", "cotton_plain", "denim")  # limp, medium, stiff: must drape in that order
+ANCHOR_GAP = 0.05  # at least this much drape coefficient between two anchors
+SPREAD_MIN = 0.2  # between the fabric that drapes most and the one that drapes least
+G = 9.81
+
+
+def bending_length(fabric: dict) -> float:
+    """Pierce's bending length (m), the length a fabric bends under its own weight:
+    (bending rigidity / weight per unit area) ** (1/3)."""
+    return (fabric["bending_rigidity"] / (fabric["areal_density"] * G)) ** (1 / 3)
+
+
+def fabric_drape(fabrics=None, out_dir="output/fabric_test", vertices=300, seconds=4.0, seed=1) -> dict:
+    """Drape the same sample of each fabric and compare them: fabrics must not drape alike.
+
+    One disc of SAMPLE_CM per fabric, no variation, each in its own simulation (the time step
+    follows the fabric). Checks: every drape passes the checks of ``run``; the anchors drape in
+    order, limp to stiff, ANCHOR_GAP apart; the drape coefficients spread over SPREAD_MIN (the
+    last two only when the fabrics tested include them)."""
+    from ..fabrics import FABRICS
+    from ..generator import Variations, generate_scene, write_outputs
+
+    names = [fabrics] if isinstance(fabrics, str) else list(fabrics or FABRICS)
+    unknown = [n for n in names if n not in FABRICS]
+    if unknown:
+        raise ValueError(f"unknown fabric(s) {', '.join(unknown)}; choose from {', '.join(FABRICS)}")
+    out = Path(out_dir)
+    still = Variations(size=False, cut=False, corners=False, fabric=False, color=False)
+    rows = []
+    for name in names:
+        scene = generate_scene(
+            "tea_towel", 1, seed, still, vertices=vertices, fabric=name, formats=f"round:{SAMPLE_CM}"
+        )
+        folder = write_outputs(scene, out / name)
+        report = run(folder, pieces=1, seconds=seconds, seed=seed)
+        piece = report["pieces"][0]
+        rows.append(
+            {
+                "fabric": name,
+                "areal_density_kg_m2": FABRICS[name]["areal_density"],
+                "bending_rigidity_nm": FABRICS[name]["bending_rigidity"],
+                "tensile_stiffness_n_m": FABRICS[name]["tensile_stiffness"],
+                "bending_length_cm": round(bending_length(FABRICS[name]) * 100, 2),
+                "drape_coefficient": piece["drape_coefficient"],
+                "timestep_s": report["timestep_s"],
+                "wall_s": report["wall_s"],
+                "passed": piece["passed"],
+                "failed": [k for k, v in piece["checks"].items() if not v],
+            }
+        )
+    drape = {r["fabric"]: r["drape_coefficient"] for r in rows}
+    checks = {"drapes": all(r["passed"] for r in rows)}
+    if all(a in drape for a in ANCHORS):
+        steps = [drape[b] - drape[a] for a, b in zip(ANCHORS, ANCHORS[1:], strict=False)]
+        checks["anchors_in_order"] = all(step >= ANCHOR_GAP for step in steps)
+    if len(rows) == len(FABRICS):
+        checks["spread"] = max(drape.values()) - min(drape.values()) >= SPREAD_MIN
+    report = {
+        "engine": rows and report["engine"],
+        "sample": f"disc of {SAMPLE_CM} cm on a pedestal of {SAMPLE_CM * PEDESTAL_FRACTION:g} cm",
+        "vertices": vertices,
+        "simulated_s": seconds,
+        "criteria": {"anchors": list(ANCHORS), "anchor_gap_min": ANCHOR_GAP, "spread_min": SPREAD_MIN},
+        "fabrics": rows,
+        "checks": checks,
+        "passed": all(checks.values()),
+    }
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "fabric_test.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    report["report"] = str(out / "fabric_test.json")
+    return report
+
+
+def fabric_lines(report) -> list[str]:
+    lines = []
+    for r in sorted(report["fabrics"], key=lambda r: r["drape_coefficient"]):
+        lines.append(
+            f"{'PASS' if r['passed'] else 'FAIL'}  {r['fabric']:<15} drape {r['drape_coefficient']:.2f}  "
+            f"bending length {r['bending_length_cm']:.2f} cm  tensile {r['tensile_stiffness_n_m']:g} N/m"
+            + (f"  failed: {', '.join(r['failed'])}" if r["failed"] else "")
+        )
+    failed = [k for k, v in report["checks"].items() if not v]
+    lines.append(
+        ("PASSED" if report["passed"] else f"FAILED: {', '.join(failed)}") + f" ({report['sample']})"
+    )
+    return lines
