@@ -161,7 +161,7 @@ unchanged (same shapes with plain colours, same colours with a perfect cut…).
 | `maillage_<preset>_omniphysics.usda` | the same scene with NVIDIA OmniPhysics surface deformables (Omniverse, Isaac Sim 5+): an OpenUSD layer over the main file, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/engines.md#engines) |
 | `maillage_<preset>.xml` | the same scene as a MuJoCo model, one flex cloth per piece, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/engines.md#engines) |
 | `textures/<piece>.png` | pattern texture of each piece |
-| `instances.csv` | one row per piece, read back from the file: its identity, **every drawn value** (`variation:<name>`) and **every measured value** (`measured:<name>`): the ground truth |
+| `instances.csv` | one row per piece, read back from the file: its identity, its classes (the [semantic labels](https://github.com/drscaon/maillage/blob/main/docs/openusd.md) renderers turn into segmentation masks), **every drawn value** (`variation:<name>`) and **every measured value** (`measured:<name>`): the ground truth |
 | `manifest.json` | what the pack is (contract, generator, version, preset, seed, aspects, files) and its summary: counts by fabric, pattern, shape and format; mass and mesh statistics |
 | `sheet.png` | flat preview (`maillage preview`) |
 | `drop_test/` | `drop_test.json`, `draped.usdc`, `drop_test.png`, `drop_test.gif` and `frames/` (`maillage drop-test`) |
