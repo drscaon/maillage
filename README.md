@@ -61,7 +61,7 @@ imported into Blender and draped by the drape test. Render:
 - **Exports and tests every piece in MuJoCo** (`maillage_<preset>.xml`, one
   flex cloth per piece; `maillage sim-test`), and **exports it for NVIDIA
   OmniPhysics** as surface deformables (`maillage_<preset>_omniphysics.usda`);
-  see [Engines](#engines).
+  see [Engines](https://github.com/drscaon/maillage/blob/main/docs/engines.md#engines).
 
 ## Installation
 
@@ -140,85 +140,6 @@ show the rest, each explained by its own comments: a first pack and its
 ground truth, one aspect switched off, reading the file with OpenUSD alone,
 and the drape test in MuJoCo.
 
-### Presets
-
-| Category | Preset | Formats (cm) | Fabrics |
-|---|---|---|---|
-| Bath | `bath_towel` | 70×140, 90×150 | cotton terry |
-| | `hand_towel` | 50×100, 40×60 | cotton terry |
-| | `washcloth` | 30×30 | cotton terry |
-| Kitchen | `tea_towel` | 50×70, 45×65 | waffle cotton, linen, plain cotton |
-| Table | `napkin` | 40×40, 50×50 | linen, plain cotton |
-| | `tablecloth` | 140×180, 140×240, round ⌀150, oval 140×200 | plain cotton, linen |
-| Bedding | `bed_sheet` | 180×290, 240×300, 270×310 | percale, linen |
-| Cleaning | `microfiber_cloth` | 40×40, 30×30 | microfiber |
-| Accessories | `bandana` | 55×55 | plain cotton |
-| | `silk_scarf` | 90×90, 50×160 | silk |
-| | `scarf` | 25×160, 30×180, 20×140 (knitted winter scarf) | wool knit |
-| Outdoor | `flag` | 100×150, 60×90 (hung by the hoist) | polyester knit |
-
-![The 12 presets side by side, one piece each, draped in Blender](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/all_presets.jpg)
-
-*One piece of each preset (seed 2), simulated 5 s by the Blender drape test
-and rendered with Cycles; each image is framed on its own piece, so scales
-differ (30 cm washcloth to 3 m sheet). Same colours for the three terry
-presets: they share a palette and, with one seed, the same colour draw.*
-
-Sizes are common retail formats; values are realistic orders of magnitude,
-not measurements of a specific product. Flags use generic two or three band
-designs with random colours on unequal, asymmetric bands, so that real
-national flags (equal or symmetric bands) are unlikely.
-
-### Fabrics
-
-| Fabric | Areal density | Thickness | Friction |
-|---|---|---|---|
-| `cotton_terry` | 450 g/m² | 4 mm | 0.8 |
-| `cotton_waffle` | 220 g/m² | 1.5 mm | 0.6 |
-| `cotton_plain` | 140 g/m² | 0.3 mm | 0.5 |
-| `cotton_percale` | 120 g/m² | 0.25 mm | 0.5 |
-| `linen` | 180 g/m² | 0.35 mm | 0.55 |
-| `denim` | 400 g/m² | 0.7 mm | 0.6 |
-| `fleece` | 250 g/m² | 3 mm | 0.8 |
-| `microfiber` | 300 g/m² | 2 mm | 0.9 |
-| `polyester_knit` | 115 g/m² | 0.2 mm | 0.4 |
-| `silk` | 60 g/m² | 0.1 mm | 0.3 |
-| `wool_knit` | 350 g/m² | 3 mm | 0.7 |
-
-`--fabric` gives every piece the same fabric, whatever the preset's mix.
-
-### Formats
-
-Each preset draws from its own retail formats (table above). `--format`
-(Python: `formats=`) replaces them with your sizes and shapes, in cm, as a
-comma-separated list:
-
-| Format | Shape |
-|---|---|
-| `50x70` (or `rect:50x70`, `50×70`) | rectangle, 50 × 70 cm |
-| `oval:140x200` (or `ellipse:140x200`) | ellipse, 140 × 200 cm |
-| `round:150` | circle, 150 cm in diameter |
-| `50x70@3` | any of the above with a weight (here 3; 1 when there is no `@`) |
-
-**Weights.** Each piece draws one format at random, with a probability
-proportional to its weight: weight / sum of the weights. With
-`--format "140x180@2,round:150,oval:140x220"` the weights are 2, 1 and 1
-(sum 4), so each tablecloth has a 50 % chance of being 140×180, 25 % of being
-round and 25 % of being oval: about 6, 3 and 3 out of 12 on average, the exact
-counts depending on the seed. Only the ratios matter (`@2`, `@1`, `@1` is the
-same as `@50`, `@25`, `@25`), and without any `@` all formats are equally
-likely. With `--no-size`, nothing is drawn: every piece takes the first format
-of the list, at its exact size. The presets' own formats use the same weights
-(a `bath_towel` is 70×140 with weight 0.7, 90×150 with weight 0.3).
-
-The longer side is always the length, so `70x50` is the same as `50x70`. The
-preset's size tolerance, cut, corners, fabric and patterns still apply. In
-Python, a format can also be a dict (`{"width": 50, "length": 70, "shape":
-"rect", "weight": 1}`) or a tuple (`(50, 70)`, `(150, 150, "round")`). With
-`--topology grid`, round and oval formats are skipped (at least one rectangle
-is needed). `manifest.json` counts the pieces of each format drawn, in its
-summary.
-
 ### Variations
 
 Each aspect has its own random stream: turning one off leaves the others
@@ -232,178 +153,19 @@ unchanged (same shapes with plain colours, same colours with a perfect cut…).
 | `--no-color` / `color=False` | pattern and colours drawn | first pattern, first colours |
 | `--fabric NAME` / `fabric="linen"` (`Variations(fabric=False)`: first fabric) | fabric drawn from the preset's mix | one fabric for every piece |
 
-### Mesh
-
-| Option | Default | Effect |
-|---|---|---|
-| `--topology tri` | ✓ | near-equilateral triangles (Delaunay on a jittered hexagonal lattice, outline sampled at the same spacing); any outline; minimum angles above ~20° |
-| `--topology grid` | | structured quads stretched over the four cut edges (Coons patch); rectangles only, sharp corners; round formats are skipped |
-| `--vertices N` | 1500 | target vertices per piece, whatever its size |
-| `--count N`, `--seed S` | 12, 1 | number of pieces, random seed; same options and seed give the same pieces |
-
-![Flat preview of nine tea towels, with their mesh](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/sheet_tea_towel.png)
-
-*`maillage preview output/tea_towel` on a grid-topology set: the texture is
-drawn over each piece and the mesh shown on top; the wavy grid lines are the
-imperfect cut, spread across the piece.*
-
 ## Outputs (per preset, under `output/<preset>/`)
 
 | File | Content |
 |---|---|
 | `maillage_<preset>.usdc` | OpenUSD scene (Blender: File > Import > USD) |
-| `maillage_<preset>_omniphysics.usda` | the same scene with NVIDIA OmniPhysics surface deformables (Omniverse, Isaac Sim 5+): an OpenUSD layer over the main file, see [Engines](#engines) |
-| `maillage_<preset>.xml` | the same scene as a MuJoCo model, one flex cloth per piece, see [Engines](#engines) |
+| `maillage_<preset>_omniphysics.usda` | the same scene with NVIDIA OmniPhysics surface deformables (Omniverse, Isaac Sim 5+): an OpenUSD layer over the main file, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/engines.md#engines) |
+| `maillage_<preset>.xml` | the same scene as a MuJoCo model, one flex cloth per piece, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/engines.md#engines) |
 | `textures/<piece>.png` | pattern texture of each piece |
 | `instances.csv` | one row per piece, read back from the file: its identity, **every drawn value** (`variation:<name>`) and **every measured value** (`measured:<name>`): the ground truth |
 | `manifest.json` | what the pack is (contract, generator, version, preset, seed, aspects, files) and its summary: counts by fabric, pattern, shape and format; mass and mesh statistics |
 | `sheet.png` | flat preview (`maillage preview`) |
 | `drop_test/` | `drop_test.json`, `draped.usdc`, `drop_test.png`, `drop_test.gif` and `frames/` (`maillage drop-test`) |
 | `sim_test/` | `sim_test.json` and the MuJoCo model of the test, `mujoco_drape.xml` (`maillage sim-test`) |
-
-### OpenUSD layout
-
-Z up, metres, kilograms. `/World` is the default prim.
-
-```
-/World
-  /Looks/<piece>      UsdPreviewSurface + UsdUVTexture (textures/<piece>.png)
-  /Cloths/<piece>     UsdGeom.Mesh, flat on the ground, laid out in rows
-  /PhysicsScene       gravity (shared, see below)
-  /Ground             the shared ground, its top face at z = 0 (CollisionAPI)
-  /GroundMaterial     its physics material
-```
-
-### Ground and physics scene (the same in every Primvaria project)
-
-Every file with physics carries the same two prims, so that assets from
-different generators can share one scene and every engine gets the same floor:
-
-| Prim | What it is |
-|---|---|
-| `/World/PhysicsScene` | gravity 9.81 m/s² along −Z |
-| `/World/Ground` | a static box (`UsdGeom.Cube`, `CollisionAPI`), its top face at z = 0, 2 cm thick, covering the content with 0.5 m to spare on each side (1 m × 1 m at least), grey and rendered, no PhysX attributes (engines derive their contact offsets) |
-| `/World/GroundMaterial` | its physics material: static friction 0.6, dynamic friction 0.5, restitution 0.1, a wooden or concrete floor |
-
-The code is one file, `ground.py`, identical in Granulaire, Maillage, Filaire
-and Quincaillerie; a test checks every generated file against it. The MuJoCo
-checks and the Blender rigid-body checks take the ground's friction from the
-file (Blender's cloth, in Maillage, has its own collision settings).
-
-Each cloth mesh has `subdivisionScheme = none`, is double sided, and carries:
-
-| Property | Content |
-|---|---|
-| `primvars:st` | texture coordinates (vertex) |
-| `primvars:hem` | 1 on the hemmed band along the edges, 0 elsewhere (vertex) |
-| `primvars:pin` | 1 on pinned vertices: the hoist corners of a flag (vertex) |
-| `primvars:displayColor` | mean colour of the texture |
-| `maillage:fabric`, `maillage:pattern`, `maillage:shape` | what the piece is |
-| `maillage:arealDensity`, `maillage:mass`, `maillage:thickness`, `maillage:friction` | physical properties (SI units) |
-| `maillage:nominalSize`, `maillage:size`, `maillage:cornerRadius` | retail and actual size (m) |
-| `maillage:hemBendingFactor` | how much stiffer the hem is in bending |
-| `maillage:tensileStiffness`, `maillage:bendingRigidity`, `maillage:poissonsRatio` | engine-neutral stiffness: N/m, N·m (see [Engines](#engines)) |
-| `maillage:blender:*` | stiffness for Blender's cloth solver, for 1 cm edges (see [Blender values](#blender-values)) |
-
-OpenUSD has no standard schema for cloth simulation (`UsdPhysics` covers
-rigid bodies and joints), so these properties are custom attributes. Blender's
-USD importer reads the geometry, UVs, material, texture and the `hem` and
-`pin` primvars (as mesh attributes); the drape test reads the `maillage:*`
-attributes with the OpenUSD bindings shipped with Blender.
-
-## Blender drape test
-
-`maillage drop-test` imports the scene into Blender and, for each tested
-piece:
-
-1. sets up Blender's cloth solver from the `maillage:*` attributes: stiffness
-   rescaled to the mesh and the piece's real mass, stiffer bending on the hem,
-   collisions and self-collisions;
-2. **drape**: lays the piece flat on a round pedestal (diameter 60 % of the
-   shorter side), its centre clamped as between the two discs of a Cusick
-   drape tester, and lets the rest fall; **hang**: a flag hangs from its two
-   hoist corners on a pole, optionally in the wind;
-3. simulates 5 s (120 frames at 24 fps);
-4. checks the result and writes `drop_test.json`:
-
-| Check | Pass when |
-|---|---|
-| finite | no invalid coordinate |
-| stretch | 99 % of the edges stretched by less than 10 %, none by more than 60 % |
-| penetration | less than 0.5 % of the vertices inside the pedestal or under the floor |
-| at rest | (drape) fastest vertex below 10 cm/s at the end |
-
-It also measures the **drape coefficient** of each draped piece, as in the
-Cusick test: (projected area − pedestal area) / (flat area − pedestal area),
-from 1 (stays flat) to 0 (hangs straight down). The draped meshes are exported
-to `draped.usdc` with their `maillage:*` attributes copied back: ready-to-use
-draped assets.
-
-### Results
-
-Indicative results of `maillage drop-test` on three pieces of each preset
-(seed 1, ~1,500 vertices per piece, 120 frames, Blender 5.2):
-
-| Preset | Mass (g) | Vertices | Scenario | Drape coefficient | Stretch (p99) | Result |
-|---|---|---|---|---|---|---|
-| `bath_towel` | 429–450 | 1563–1582 | drape | 0.22–0.23 | 3.1–3.7 % | 3/3 pass |
-| `hand_towel` | 219–229 | 1563–1585 | drape | 0.22–0.26 | 2.6–3.6 % | 3/3 pass |
-| `washcloth` | 39–41 | 1562–1572 | drape | 0.40–0.49 | 4.2–5.1 % | 3/3 pass |
-| `tea_towel` | 75–78 | 1549–1570 | drape | 0.28 | 2.8–2.9 % | 3/3 pass |
-| `napkin` | 28–29 | 1559–1578 | drape | 0.36–0.38 | 2.2–2.6 % | 3/3 pass |
-| `tablecloth` | 356–470 | 1564–1572 | drape | 0.20–0.25 | 3.1–4.0 % | 3/3 pass |
-| `bed_sheet` | 636–863 | 1553–1573 | drape | 0.28–0.37 | 3.0–3.1 % | 3/3 pass |
-| `microfiber_cloth` | 47–49 | 1554–1575 | drape | 0.37–0.41 | 2.2–2.4 % | 3/3 pass |
-| `bandana` | 42–43 | 1558–1576 | drape | 0.30–0.33 | 2.5–3.1 % | 3/3 pass |
-| `silk_scarf` | 48–49 | 1560–1579 | drape | 0.25–0.27 | 3.1–3.4 % | 3/3 pass |
-| `scarf` | 134–189 | 1608–1621 | drape | 0.10–0.13 | 2.6–2.8 % | 3/3 pass |
-| `flag` | 170–174 | 1551–1567 | hang | — | 1.9–2.4 % | 3/3 pass |
-
-No piece went through the pedestal or the floor. The drape coefficient
-depends on the shape of the piece as much as on the fabric (a long towel
-hangs further past a pedestal sized on its short side), so it compares
-pieces of one preset, not presets with each other. To compare fabrics, the
-same 40 cm square was draped in each (`maillage generate --preset napkin
---no-size --no-cut --fabric silk,polyester_knit,cotton_plain,linen,cotton_terry,denim`):
-
-| Fabric | silk | polyester knit | plain cotton | linen | cotton terry | denim |
-|---|---|---|---|---|---|---|
-| Mass of the square | 10 g | 18 g | 22 g | 29 g | 72 g | 64 g |
-| Drape coefficient | 0.37 | 0.35 | 0.42 | 0.40 | 0.38 | 0.42 |
-
-In Blender the fabrics differ in mass, thickness, friction and look much
-more than in drape: the drape coefficients stay within 0.35–0.42, where real
-silk and denim are far apart (see the [roadmap](#roadmap)). In MuJoCo, with
-the engine-neutral stiffness, they do not drape alike: see the
-[fabric drape test](#fabric-drape-test).
-
-![Four 40 cm squares (silk, plain cotton, linen, denim) falling onto their pedestals](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/drape_fabrics.gif)
-
-*Silk, plain cotton, linen and denim squares falling onto the clamped
-pedestals, slowed down twice: `maillage generate --preset napkin --count 4 --fabric
-silk,cotton_plain,linen,denim` then `maillage drop-test output/napkin --frames 40
---gif --gif-step 1`.*
-
-![Two flags hanging from their poles, fluttering in the wind](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/flags_wind.gif)
-
-*Flags hung by their hoist corners in the wind: `maillage drop-test
-output/flag --wind 4 --gif`.*
-
-### Blender values
-
-Blender's cloth stiffness acts per edge and is not divided by the vertex mass,
-so the same numbers make a fabric stiffer or softer depending on the mesh
-resolution. Maillage stores the stiffness for a reference mesh with 1 cm edges
-and the real mass, and the drape test rescales it: tension and shear with the
-edge length, bending unchanged, air damping with the area per vertex. The
-solver itself runs with Blender's usual 0.3 kg vertex mass and every stiffness
-and damping multiplied by the same factor, which leaves the motion unchanged
-and keeps Blender's solver in the range its tolerances are tuned for.
-
-Tension gives about 3 % stretch when a piece drapes; bending is smaller for
-softer fabrics, and kept low for all of them (see the
-[roadmap](#roadmap)). **The values are not calibrated** against measured
-fabric properties.
 
 ## Engines
 
@@ -418,237 +180,38 @@ stands, as on the [Primvaria engine matrix](https://primvaria.com/#engines):
 | NVIDIA OmniPhysics (Isaac Sim 5+) | surface deformables exported, structure checked, not simulated yet |
 
 The main file is engine-neutral; engine-specific exports are read back from
-it, so every engine sees the same piece.
-
-**Engine-neutral stiffness.** Each fabric has a tensile (membrane) stiffness
-K in N/m, a bending rigidity B in N·m and a Poisson's ratio: orders of
-magnitude from published ranges (B from 1e-6 N·m for silk to 1e-4 N·m for
-denim; K from 1e2 N/m for a knitted scarf to a few 1e3 N/m for wovens), not
-measurements. Shell models (MuJoCo, OmniPhysics) take a Young's modulus E and
-a thickness t; the pair with E·t = K and E·t³ / 12(1 − ν²) = B gives both
-exactly. That t is a bending thickness, not the fabric's real thickness:
-fabrics bend far more easily than a solid plate of the same thickness.
-
-| Engine | Export | Tested |
-|---|---|---|
-| Blender | the main file, through Blender's USD importer, with the `maillage:blender:*` stiffness | **yes**: `maillage drop-test`, every preset in CI |
-| MuJoCo | `maillage_<preset>.xml`: one flex per piece (`flexcomp`, triangle shell, `elastic2d="both"`), mass, friction | **yes**: `maillage sim-test`, every preset in CI |
-| NVIDIA OmniPhysics (Isaac Sim 5+) | `maillage_<preset>_omniphysics.usda`: surface deformables (`OmniPhysicsDeformableBodyAPI`, `OmniPhysicsSurfaceDeformableSimAPI`, `OmniPhysicsSurfaceDeformableMaterialAPI`), faces split into triangles | **structure only** (`python -m maillage.omniphysics`, OpenUSD validators): not simulated, OmniPhysics needs an NVIDIA RTX GPU |
-
-### MuJoCo drape test
-
-```bash
-pip install "maillage[sim]"
-maillage sim-test output/tea_towel --pieces 4
-```
-
-The same scenario and checks as the [Blender drape test](#blender-drape-test),
-built from the OpenUSD file only: drape on a clamped pedestal (or hang from
-the pinned vertices), 5 s, then finite values, stretch, penetration, at rest;
-plus **mass** (the flex's mass is the file's) and **solver** (no MuJoCo
-warning). The drape coefficient is measured.
-
-MuJoCo settings, found with the test (MuJoCo 3.17; CI runs it on MuJoCo 4): the `discrete` integrator
-(the only one that integrates flex elasticity implicitly), a 0.5 ms time step
-(smaller when the membrane is stiff for the vertex mass, as for a small linen
-napkin), the CG solver with a tight tolerance. MuJoCo cannot put air drag on
-flex vertices in the XML: the test applies it as a force, 1 N·s/m³ per unit
-of cloth area, the order of real air drag at draping speeds. Not modelled in
-MuJoCo: self-collision, the stiffer hem (one stiffness per flex), wind.
-
-### Fabric drape test
-
-```bash
-maillage fabric-test                                  # every fabric, about 4 minutes on one CPU
-maillage fabric-test --fabric silk,cotton_plain,denim
-```
-
-Do the fabrics drape differently, as real ones do? This drapes the same
-sample of each fabric in MuJoCo, a 30 cm disc on an 18 cm pedestal as in a
-Cusick drape tester, each in its own simulation, and measures its drape
-coefficient (1: the disc stays flat; 0: it hangs straight down). MuJoCo
-4.0.1, 300 vertices, 4 s:
-
-| Fabric | Bending length | Tensile stiffness | Drape coefficient |
-|---|---|---|---|
-| `polyester_knit` | 1.10 cm | 600 N/m | 0.51 |
-| `silk` | 1.19 cm | 300 N/m | 0.54 |
-| `microfiber` | 1.72 cm | 500 N/m | 0.57 |
-| `wool_knit` | 2.06 cm | 150 N/m | 0.61 |
-| `fleece` | 2.01 cm | 200 N/m | 0.62 |
-| `cotton_waffle` | 1.91 cm | 800 N/m | 0.63 |
-| `cotton_terry` | 2.08 cm | 600 N/m | 0.64 |
-| `cotton_plain` | 1.63 cm | 1500 N/m | 0.67 |
-| `cotton_percale` | 1.50 cm | 1500 N/m | 0.67 |
-| `linen` | 2.04 cm | 2500 N/m | 0.74 |
-| `denim` | 3.13 cm | 4000 N/m | 0.83 |
-
-The bending length is Pierce's, (bending rigidity / weight per unit
-area)^(1/3): the length over which a fabric bends under its own weight. The
-drape coefficient rises with it, and with the tensile stiffness: to drape in
-folds a disc must also shear in its plane, which knits (low tensile
-stiffness) do more easily than wovens. That is the dependence Cusick found on
-real fabrics, on bending length and shear stiffness
-([Cusick, 1965](https://typeset.io/papers/46-the-dependence-of-fabric-drape-on-bending-and-shear-3ppgh8xdba)).
-
-The test passes when every sample passes the checks of the drape test, silk,
-plain cotton and denim drape in that order at least 0.05 apart, and the
-fabrics spread over at least 0.2 (here 0.32). CI runs it on every fabric.
-
-What it does not show: the values are not calibrated, so a fabric's
-coefficient is not the one a Cusick tester would measure on it, and MuJoCo
-has no self-collision here, so folds can pass through each other. The mesh
-matters within about ±0.04: silk gives 0.52 to 0.59 and denim 0.83 to 0.89
-between 300 and 1200 vertices, which leaves the order and the spread
-unchanged.
-
-### OmniPhysics layer
-
-Open `maillage_<preset>_omniphysics.usda` in Omniverse or Isaac Sim: it
-sublayers the main file and adds a physics scene, the deformable-body and
-surface-simulation schemas on each cloth mesh (the mesh is both the body root
-and its simulation mesh), rest shape and triangles, and one physics material
-per fabric (Young's modulus, surface thickness, Poisson's ratio, density,
-friction). Not exported yet: the pinned vertices of a flag (they need an
-attachment) and the stiffer hem.
-
-## Method in brief
-
-1. **Outline.** A rectangle with rounded corners or an ellipse, parametrised
-   by arc length. The cut adds a smooth normal displacement (sum of a few
-   sines along the perimeter: long gentle deviations plus a small wobble) and
-   a slight shear.
-2. **Mesh.** *tri*: the outline is sampled at the target edge length (sharp
-   corners kept, roundings below the resolution merged into one vertex), the
-   inside filled with a jittered hexagonal lattice kept at least half an edge
-   away from the outline, then a Delaunay triangulation clipped to the
-   outline. *grid*: transfinite (Coons) interpolation of the four cut edges.
-3. **Fabric and mass.** The fabric is drawn from the preset's mix; the mass is
-   the measured area times the areal density.
-4. **Hem and pins.** Vertices within the hem width of the outline get
-   `hem = 1`; for flags, vertices near the two hoist corners get `pin = 1`.
-5. **Pattern.** Parameters drawn per piece (colours from the preset's
-   palettes, periods, band widths), rendered on the nominal rectangle with a
-   faint weave noise; texture coordinates follow the fabric, so a skewed or
-   wavy cut shows as a pattern not quite parallel to the edge, as on real
-   pieces.
-
-## OpenUSD compliance
-
-```bash
-python -m maillage.validate output/tea_towel
-```
-
-This runs every validator of OpenUSD's `UsdValidation` registry on each file,
-the checks `usdchecker` runs: composition, stage metadata (meters, Z up),
-geometry, material bindings, shaders, UsdPhysics rigid bodies and colliders.
-Each file is checked once per variant, since a variant that is not selected is
-not composed. The tests and CI require no error and no warning, on every
-preset.
-
-## Primvaria contract
-
-```bash
-python -m maillage.conformance output/tea_towel
-```
-
-Maillage is part of [Primvaria](https://primvaria.com) and follows its
-[mission](https://github.com/drscaon/primvaria/blob/main/MISSION.md) and its
-[OpenUSD contract](https://github.com/drscaon/primvaria/blob/main/docs/contract.md),
-version 0, which the four generators share. Every piece is an asset any tool can find without knowing Maillage: a model of kind
-`component` with `assetInfo` (name, identifier, version) and the attributes
-`primvaria:contract`, `primvaria:generator`, `primvaria:version`,
-`primvaria:preset` and `primvaria:seed`; `/World` is an `assembly` and `/World/Cloths` a group. The command above checks
-the stage units, the model hierarchy and this identity; the tests and CI
-require it on every preset.
-
-What was drawn for each piece is in the file too, its ground truth:
-`primvaria:variation:aspects` lists the aspects that were switched on
-(`size`, `cut`, `corners`, `fabric`, `color`) and `primvaria:variation:<name>` holds each drawn value
-(`length_m`, `width_m`, `format_length_m`, `corner_radius_m`, `cut_amplitudes_m`, `cut_skew_deg`, `fabric`, `pattern`, `colors`…). An aspect that is switched off is still recorded, at its
-nominal value, and the other aspects keep their draws.
-
-What was measured on each piece once generated is there as well, as
-`primvaria:measured:<name>` (`mass_kg`, `area_m2`, `perimeter_m`, `vertices`, `faces`, `edge_mean_mm`, `min_angle_deg`…).
-The pack's `instances.csv` is read back from the OpenUSD files, one row per
-asset with the same names (`variation:<name>`, `measured:<name>`), and
-`manifest.json` says what the pack is; both have the same shape in the four
-generators, and the command above fails when the table and the files disagree.
+it, so every engine sees the same piece. Stiffness values, exports and test
+results: [Engines and drape tests](https://github.com/drscaon/maillage/blob/main/docs/engines.md).
 
 ## Limits
 
-- **OmniPhysics not simulated.** The OmniPhysics layer is checked for
-  structure and by the OpenUSD validators, but has not been run in Isaac Sim
-  (no NVIDIA GPU here); flags are not attached by their hoist corners there.
-- **Stiffness not calibrated.** The engine-neutral stiffness values are
-  orders of magnitude, not measurements of these fabrics.
-- **Fabrics drape alike in Blender.** Blender's bending stiffness is kept
-  low for every fabric (see the [roadmap](#roadmap)): silk and denim drape
-  with nearly the same coefficient there. In MuJoCo they differ (see the
-  [fabric drape test](#fabric-drape-test)); use MuJoCo, or the
-  engine-neutral stiffness in another shell solver, when the fabric's drape
-  matters. No value is calibrated against measurements (no Kawabata or
-  Cusick data behind them).
-- **Flat pieces only.** No garments (sewn panels), no holes or grommets (a
-  flag is pinned at its hoist corners instead), no folded or crumpled starting
-  states, no wet cloth.
-- **Textures are procedural.** Patterns are clean and regular; no prints,
-  logos, stains or wear.
+The short version; the full list is in [Limits and roadmap](https://github.com/drscaon/maillage/blob/main/docs/limits.md).
 
-## Roadmap
-
-1. **Stiff fabrics that drape like real ones in Blender.** In MuJoCo the
-   fabrics already drape differently (see the
-   [fabric drape test](#fabric-drape-test)). Blender's angular bending
-   model (the only one that works on triangle meshes) becomes unstable when
-   the bending stiffness is high relative to the vertex mass, as with stiff
-   fabrics on fine meshes: instead of settling, the cloth keeps vibrating,
-   and adding damping makes it worse. Every fabric's bending stiffness is
-   therefore kept below this limit (about 0.015 × areal density for 1 cm
-   edges, measured), so a 40 cm square drapes with a coefficient of
-   0.35–0.42 whether it is silk or denim. Next steps: more solver steps or a
-   coarser simulation mesh for stiff fabrics, quad-grid meshes with
-   Blender's linear bending model, and other engines.
-2. Pre-draped and crumpled states as OpenUSD variants (the drape test already
-   exports draped meshes), and folded states for laundry-folding tasks.
-3. A simulation run of the OmniPhysics layer in Isaac Sim, and attachments
-   for pinned vertices.
-4. Calibration against published fabric measurements.
-5. Simple garments from sewing patterns.
+- Stiffness values are orders of magnitude from published ranges, **not
+  calibrated** against measurements of these fabrics.
+- Fabrics drape differently in MuJoCo; **in Blender they drape alike**.
+- The OmniPhysics layer is checked for structure, **not simulated yet**.
+- Flat pieces only: no garments, no folded or crumpled starting states.
 
 ## Development
 
-The project follows **GitHub Flow**:
+```bash
+git clone https://github.com/drscaon/maillage.git && cd maillage
+pip install -e ".[dev]"
+pytest
+```
 
-1. `main` is always releasable and protected: changes reach it only through
-   pull requests, nobody pushes to it directly.
-2. Every change starts on a short-lived branch from `main`, named after its
-   type: `feat/<name>`, `fix/<name>`, `docs/<name>`, `ci/<name>`, …
-3. Push the branch and open a pull request into `main`; CI runs on it.
-4. Merge when CI is green, then delete the branch.
+Conventions and continuous integration: [Development](https://github.com/drscaon/maillage/blob/main/docs/development.md).
 
-Releasing is a change like any other: on a `chore/release-X.Y.Z` branch, bump
-`version` in `pyproject.toml` and move the `Unreleased` entries of
-`CHANGELOG.md` under the new version; merge the pull request, then tag
-`vX.Y.Z` on `main` (or create the release on the GitHub web page with that new
-tag). The release workflow builds the packages and attaches them.
+## Documentation
 
-A versioned `pre-push` hook refuses direct pushes to `main`. Enable it once per
-clone with `git config core.hooksPath .githooks` (emergency override:
-`ALLOW_MAIN_PUSH=1 git push`).
-
-### Continuous integration
-
-GitHub Actions runs these workflows (`.github/workflows/`):
-
-| Workflow | When | What |
-|---|---|---|
-| `ci.yml` | every push to `main`, every pull request | `ruff check` and `ruff format --check`; `pytest` on Python 3.11–3.13 (Linux) and 3.12 (macOS, Windows); a command-line smoke test; **the Blender drape test of every preset** with the `bpy` module (Python 3.13, Linux), reports kept as a run artifact; build the wheel and sdist, `twine check`, install the wheel in a clean environment. |
-| `release.yml` | a pushed tag `v*` | checks the tag matches the version in `pyproject.toml`, tests, builds, then creates the GitHub release with the packages attached and the notes taken from `CHANGELOG.md`. Versions with `a`, `b` or `rc` are marked as pre-releases. |
-| Dependabot | monthly | pull requests to update the GitHub Actions and the Python dependencies. |
-
-Ruff is pinned in CI so that a new ruff release cannot fail the build on
-unchanged code; update the pin and run `ruff format .` together.
+| Page | What it holds |
+|---|---|
+| [Usage in depth](https://github.com/drscaon/maillage/blob/main/docs/usage.md) | The preset list, fabrics, formats, mesh options and how a piece is built. |
+| [OpenUSD layout and contract](https://github.com/drscaon/maillage/blob/main/docs/openusd.md) | How a piece is laid out in the file, the ground and physics scene, OpenUSD compliance, and what the Primvaria contract writes on every piece. |
+| [Engines and drape tests](https://github.com/drscaon/maillage/blob/main/docs/engines.md) | The engine-neutral stiffness, the MuJoCo and OmniPhysics exports, and the drape tests in Blender and MuJoCo with their results. |
+| [Limits and roadmap](https://github.com/drscaon/maillage/blob/main/docs/limits.md) | Everything Maillage does not do or has not verified, stated plainly, and what comes next. |
+| [Development](https://github.com/drscaon/maillage/blob/main/docs/development.md) | Branch and release conventions, continuous integration. |
 
 ## License
 
