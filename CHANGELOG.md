@@ -20,6 +20,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- `examples/`: four short scripts, each explained by its own comments (a first
+  pack and its ground truth, one aspect switched off, reading the file with
+  OpenUSD alone, the drape test in MuJoCo); a test runs each one.
 - `maillage fabric-test` (`maillage.sim.mujoco_test.fabric_drape`): drapes the
   same Cusick sample (a 30 cm disc on an 18 cm pedestal) of every fabric in
   MuJoCo and checks that they do not drape alike: silk, plain cotton and
@@ -47,6 +50,21 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - `python -m maillage.conformance`: checks files against the contract (stage
   units, model hierarchy, identity). Run in the tests and, in CI, on every
   preset.
+
+### Changed
+
+- The README is a third of its former length; the detail moved, unchanged, to
+  `docs/`: `usage.md`, `openusd.md`, `engines.md`, `limits.md`,
+  `development.md`. [primvaria.com/maillage](https://primvaria.com/maillage/)
+  is built from these files.
+- Continuous integration runs the checks shared by the four generators
+  (Primvaria's reusable workflow).
+
+### Fixed
+
+- `maillage list` no longer fails on a console that is not UTF-8 (cp1252:
+  Windows with redirected output, Git Bash): a sign the console lacks is
+  printed as `?`.
 
 ### Removed
 
