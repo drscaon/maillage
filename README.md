@@ -135,6 +135,11 @@ tablecloths = generate_scene("tablecloth", count=12, formats="140x180@2, round:1
 write_outputs(tablecloths, "output")
 ```
 
+Four short scripts in [`examples/`](https://github.com/drscaon/maillage/tree/main/examples)
+show the rest, each explained by its own comments: a first pack and its
+ground truth, one aspect switched off, reading the file with OpenUSD alone,
+and the drape test in MuJoCo.
+
 ### Presets
 
 | Category | Preset | Formats (cm) | Fabrics |
