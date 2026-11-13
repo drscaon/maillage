@@ -99,3 +99,15 @@ def test_format_option(tmp_path, capsys):
     assert summary["formats"] == {"⌀120": 4} and summary["shapes"] == {"ellipse": 4}
     with pytest.raises(SystemExit):
         main(["generate", "--format", "hex:50x70"])
+
+
+def test_list_prints_on_a_console_that_is_not_utf8():
+    """cp1252 has no diameter or ohm sign: the command must still print."""
+    import os
+    import subprocess
+    import sys
+
+    env = dict(os.environ, PYTHONIOENCODING="cp1252")
+    done = subprocess.run([sys.executable, "-m", "maillage", "list"], env=env, capture_output=True)
+    assert done.returncode == 0, done.stderr.decode("cp1252", "replace")
+    assert done.stdout
