@@ -1,0 +1,56 @@
+{
+ "package": "maillage",
+ "cases": [
+  {
+   "name": "tea_towel",
+   "args": [
+    "generate",
+    "--preset",
+    "tea_towel",
+    "--count",
+    "3",
+    "--seed",
+    "7"
+   ]
+  },
+  {
+   "name": "bath_towel_grid",
+   "args": [
+    "generate",
+    "--preset",
+    "bath_towel",
+    "--count",
+    "2",
+    "--topology",
+    "grid",
+    "--seed",
+    "3"
+   ]
+  },
+  {
+   "name": "silk_scarf",
+   "args": [
+    "generate",
+    "--preset",
+    "silk_scarf",
+    "--count",
+    "2",
+    "--seed",
+    "5"
+   ]
+  },
+  {
+   "name": "tea_towel_cut_off",
+   "args": [
+    "generate",
+    "--preset",
+    "tea_towel",
+    "--count",
+    "3",
+    "--no-cut",
+    "--seed",
+    "7"
+   ]
+  }
+ ]
+}
