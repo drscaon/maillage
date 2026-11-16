@@ -52,7 +52,7 @@
    "preset": "bath_towel",
    "prim": "/World/Cloths/bath_towel_001",
    "seed": "3",
-   "variation:colors": "#ffffff #2f4858",
+   "variation:colors": "#ffffff",
    "variation:corner_radius_m": "0",
    "variation:cut_amplitudes_m": "0.000803384084 0.00068200339 0.000254703254",
    "variation:cut_cycles": "4 8 28",

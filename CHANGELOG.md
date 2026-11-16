@@ -6,8 +6,20 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed values
+
+- A `solid` piece records the one colour its texture paints: its
+  `variation:colors` no longer holds an accent that was drawn but never
+  painted. The draws and the pieces are unchanged (PRV-34).
+
 ### Added
 
+- `docs/variation.md`: how every drawn value follows its preset, what each
+  pattern draws, and every preset's numbers, written from
+  `maillage/declared.py` and the presets; `tests/test_distributions.py` draws
+  a thousand pieces of every preset and checks each value's range and
+  distribution, and that a piece records exactly the declared values and
+  those of its pattern (PRV-34).
 - Reproducibility references (`tests/test_golden.py`, shared by the four
   generators): four cases of fixed preset, seed and options whose pack tables
   must give the same drawn and measured values on every Python and platform

@@ -182,7 +182,13 @@ def _drawn(
 ) -> dict:
     """What was drawn for a piece (written as primvaria:variation:*): its format and size,
     its corners, its cut, its fabric, its pattern and colours."""
-    colors = pattern.get("colors") or [pattern["base"], pattern["accent"]]
+    # the colours the texture paints: a solid piece has its base only
+    if pattern.get("colors"):
+        colors = pattern["colors"]
+    elif pattern["pattern"] == "solid":
+        colors = [pattern["base"]]
+    else:
+        colors = [pattern["base"], pattern["accent"]]
     out = {
         "format_shape": fmt["shape"],
         "format_length_m": fmt["length"] / 100,
