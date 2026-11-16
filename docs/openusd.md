@@ -86,7 +86,7 @@ require it on every preset.
 What was drawn for each piece is in the file too, its ground truth:
 `primvaria:variation:aspects` lists the aspects that were switched on
 (`size`, `cut`, `corners`, `fabric`, `color`) and `primvaria:variation:<name>` holds each drawn value
-(`length_m`, `width_m`, `format_length_m`, `corner_radius_m`, `cut_amplitudes_m`, `cut_skew_deg`, `fabric`, `pattern`, `colors`…). An aspect that is switched off is still recorded, at its
+(`length_m`, `width_m`, `format_length_m`, `corner_radius_m`, `cut_amplitudes_m`, `cut_skew_deg`, `fabric`, `pattern`, `colors`…; how each is drawn: [variation.md](variation.md)). An aspect that is switched off is still recorded, at its
 nominal value, and the other aspects keep their draws.
 
 What was measured on each piece once generated is there as well, as

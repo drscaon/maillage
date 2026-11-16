@@ -209,6 +209,7 @@ Conventions and continuous integration: [Development](https://github.com/drscaon
 |---|---|
 | [Usage in depth](https://github.com/drscaon/maillage/blob/main/docs/usage.md) | The preset list, fabrics, formats, mesh options and how a piece is built. |
 | [OpenUSD layout and contract](https://github.com/drscaon/maillage/blob/main/docs/openusd.md) | How a piece is laid out in the file, the ground and physics scene, OpenUSD compliance, and what the Primvaria contract writes on every piece. |
+| [What each piece draws](https://github.com/drscaon/maillage/blob/main/docs/variation.md) | How every drawn value follows its preset, what each pattern draws, and every preset's numbers, checked by a test against what the generator draws. |
 | [Engines and drape tests](https://github.com/drscaon/maillage/blob/main/docs/engines.md) | The engine-neutral stiffness, the MuJoCo and OmniPhysics exports, and the drape tests in Blender and MuJoCo with their results. |
 | [Limits and roadmap](https://github.com/drscaon/maillage/blob/main/docs/limits.md) | Everything Maillage does not do or has not verified, stated plainly, and what comes next. |
 | [Development](https://github.com/drscaon/maillage/blob/main/docs/development.md) | Branch and release conventions, continuous integration. |
