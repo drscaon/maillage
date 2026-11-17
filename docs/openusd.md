@@ -45,8 +45,8 @@ Each cloth mesh has `subdivisionScheme = none`, is double sided, and carries:
 | `maillage:arealDensity`, `maillage:mass`, `maillage:thickness`, `maillage:friction` | physical properties (SI units) |
 | `maillage:nominalSize`, `maillage:size`, `maillage:cornerRadius` | retail and actual size (m) |
 | `maillage:hemBendingFactor` | how much stiffer the hem is in bending |
-| `maillage:tensileStiffness`, `maillage:bendingRigidity`, `maillage:poissonsRatio` | engine-neutral stiffness: N/m, N·m (see [Engines](engines.md#engines)) |
-| `maillage:blender:*` | stiffness for Blender's cloth solver, for 1 cm edges (see [Blender values](engines.md#blender-values)) |
+| `maillage:tensileStiffness`, `maillage:bendingRigidity`, `maillage:poissonsRatio` | engine-neutral stiffness: N/m, N·m (see [Engines](physics.md#engines)) |
+| `maillage:blender:*` | stiffness for Blender's cloth solver, for 1 cm edges (see [Blender values](physics.md#blender-values)) |
 
 OpenUSD has no standard schema for cloth simulation (`UsdPhysics` covers
 rigid bodies and joints), so these properties are custom attributes. Blender's

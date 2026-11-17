@@ -6,7 +6,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Changed values
+### Changed v- `docs/engines.md` is now `docs/physics.md`, the name the other generators
+  use for the same page (PRV-35).
+alues
 
 - A `solid` piece records the one colour its texture paints: its
   `variation:colors` no longer holds an accent that was drawn but never
@@ -14,6 +16,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- `generate --no-vary ASPECTS` and `--nominal`, as in the other generators of
+  the suite, `fabric` included: `--no-vary cut,color` keeps those aspects
+  nominal, and an unknown aspect is refused. `--no-cut`, `--no-color`… still
+  work, and are deprecated (PRV-35).
 - `docs/variation.md`: how every drawn value follows its preset, what each
   pattern draws, and every preset's numbers, written from
   `maillage/declared.py` and the presets; `tests/test_distributions.py` draws

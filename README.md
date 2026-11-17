@@ -61,7 +61,7 @@ imported into Blender and draped by the drape test. Render:
 - **Exports and tests every piece in MuJoCo** (`maillage_<preset>.xml`, one
   flex cloth per piece; `maillage sim-test`), and **exports it for NVIDIA
   OmniPhysics** as surface deformables (`maillage_<preset>_omniphysics.usda`);
-  see [Engines](https://github.com/drscaon/maillage/blob/main/docs/engines.md#engines).
+  see [Engines](https://github.com/drscaon/maillage/blob/main/docs/physics.md#engines).
 
 ## Installation
 
@@ -95,7 +95,7 @@ maillage list
 maillage generate --preset tea_towel                     # 12 pieces, triangles
 maillage generate --preset tablecloth --count 20 --seed 3
 maillage generate --preset bath_towel --topology grid --vertices 2500
-maillage generate --preset napkin --fabric silk --no-cut --no-color
+maillage generate --preset napkin --fabric silk --no-vary cut,color
 maillage generate --preset tablecloth --format "140x180@2,round:150,oval:140x220"
 maillage preview output/tea_towel                        # flat sheet (matplotlib)
 maillage drop-test output/tea_towel --pieces 4 --render  # Blender drape test
@@ -145,21 +145,25 @@ and the drape test in MuJoCo.
 Each aspect has its own random stream: turning one off leaves the others
 unchanged (same shapes with plain colours, same colours with a perfect cut…).
 
-| Option (CLI / Python `Variations`) | On (default) | Off |
+`--no-vary ASPECTS` keeps aspects nominal (comma-separated), `--nominal`
+keeps them all nominal, as in the other generators of the suite. The options
+`--no-size`, `--no-cut`… still work, and are deprecated.
+
+| Aspect (`--no-vary` / Python `Variations`) | On (default) | Off |
 |---|---|---|
-| `--no-size` / `size=False` | format drawn, size within the preset's tolerance | first format, exact size |
-| `--no-cut` / `cut=False` | wavy edges (0.3–6 mm) and skew (up to 1.5°) | perfect cut |
-| `--no-corners` / `corners=False` | corner radius drawn | middle of the range |
-| `--no-color` / `color=False` | pattern and colours drawn | first pattern, first colours |
-| `--fabric NAME` / `fabric="linen"` (`Variations(fabric=False)`: first fabric) | fabric drawn from the preset's mix | one fabric for every piece |
+| `size` / `size=False` | format drawn, size within the preset's tolerance | first format, exact size |
+| `cut` / `cut=False` | wavy edges (0.3–6 mm) and skew (up to 1.5°) | perfect cut |
+| `corners` / `corners=False` | corner radius drawn | middle of the range |
+| `color` / `color=False` | pattern and colours drawn | first pattern, first colours |
+| `fabric` / `fabric=False` | fabric drawn from the preset's mix | first fabric (`--fabric NAME`: one fabric for every piece) |
 
 ## Outputs (per preset, under `output/<preset>/`)
 
 | File | Content |
 |---|---|
 | `maillage_<preset>.usdc` | OpenUSD scene (Blender: File > Import > USD) |
-| `maillage_<preset>_omniphysics.usda` | the same scene with NVIDIA OmniPhysics surface deformables (Omniverse, Isaac Sim 5+): an OpenUSD layer over the main file, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/engines.md#engines) |
-| `maillage_<preset>.xml` | the same scene as a MuJoCo model, one flex cloth per piece, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/engines.md#engines) |
+| `maillage_<preset>_omniphysics.usda` | the same scene with NVIDIA OmniPhysics surface deformables (Omniverse, Isaac Sim 5+): an OpenUSD layer over the main file, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/physics.md#engines) |
+| `maillage_<preset>.xml` | the same scene as a MuJoCo model, one flex cloth per piece, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/physics.md#engines) |
 | `textures/<piece>.png` | pattern texture of each piece |
 | `instances.csv` | one row per piece, read back from the file: its identity, its classes (the [semantic labels](https://github.com/drscaon/maillage/blob/main/docs/openusd.md) renderers turn into segmentation masks), **every drawn value** (`variation:<name>`) and **every measured value** (`measured:<name>`): the ground truth |
 | `manifest.json` | what the pack is (contract, generator, version, preset, seed, aspects, files) and its summary: counts by fabric, pattern, shape and format; mass and mesh statistics |
@@ -181,7 +185,7 @@ stands, as on the [Primvaria engine matrix](https://primvaria.com/#engines):
 
 The main file is engine-neutral; engine-specific exports are read back from
 it, so every engine sees the same piece. Stiffness values, exports and test
-results: [Engines and drape tests](https://github.com/drscaon/maillage/blob/main/docs/engines.md).
+results: [Engines and drape tests](https://github.com/drscaon/maillage/blob/main/docs/physics.md).
 
 ## Limits
 
@@ -210,7 +214,7 @@ Conventions and continuous integration: [Development](https://github.com/drscaon
 | [Usage in depth](https://github.com/drscaon/maillage/blob/main/docs/usage.md) | The preset list, fabrics, formats, mesh options and how a piece is built. |
 | [OpenUSD layout and contract](https://github.com/drscaon/maillage/blob/main/docs/openusd.md) | How a piece is laid out in the file, the ground and physics scene, OpenUSD compliance, and what the Primvaria contract writes on every piece. |
 | [What each piece draws](https://github.com/drscaon/maillage/blob/main/docs/variation.md) | How every drawn value follows its preset, what each pattern draws, and every preset's numbers, checked by a test against what the generator draws. |
-| [Engines and drape tests](https://github.com/drscaon/maillage/blob/main/docs/engines.md) | The engine-neutral stiffness, the MuJoCo and OmniPhysics exports, and the drape tests in Blender and MuJoCo with their results. |
+| [Physics: engines and drape tests](https://github.com/drscaon/maillage/blob/main/docs/physics.md) | The engine-neutral stiffness, the MuJoCo and OmniPhysics exports, and the drape tests in Blender and MuJoCo with their results. |
 | [Limits and roadmap](https://github.com/drscaon/maillage/blob/main/docs/limits.md) | Everything Maillage does not do or has not verified, stated plainly, and what comes next. |
 | [Development](https://github.com/drscaon/maillage/blob/main/docs/development.md) | Branch and release conventions, continuous integration. |
 
