@@ -14,7 +14,7 @@ Part of the [Maillage](../README.md) documentation.
 - **Fabrics drape alike in Blender.** Blender's bending stiffness is kept
   low for every fabric (see the [roadmap](#roadmap)): silk and denim drape
   with nearly the same coefficient there. In MuJoCo they differ (see the
-  [fabric drape test](engines.md#fabric-drape-test)); use MuJoCo, or the
+  [fabric drape test](physics.md#fabric-drape-test)); use MuJoCo, or the
   engine-neutral stiffness in another shell solver, when the fabric's drape
   matters. No value is calibrated against measurements (no Kawabata or
   Cusick data behind them).
@@ -28,7 +28,7 @@ Part of the [Maillage](../README.md) documentation.
 
 1. **Stiff fabrics that drape like real ones in Blender.** In MuJoCo the
    fabrics already drape differently (see the
-   [fabric drape test](engines.md#fabric-drape-test)). Blender's angular bending
+   [fabric drape test](physics.md#fabric-drape-test)). Blender's angular bending
    model (the only one that works on triangle meshes) becomes unstable when
    the bending stiffness is high relative to the vertex mass, as with stiff
    fabrics on fine meshes: instead of settling, the cloth keeps vibrating,

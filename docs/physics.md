@@ -57,7 +57,7 @@ depends on the shape of the piece as much as on the fabric (a long towel
 hangs further past a pedestal sized on its short side), so it compares
 pieces of one preset, not presets with each other. To compare fabrics, the
 same 40 cm square was draped in each (`maillage generate --preset napkin
---no-size --no-cut --fabric silk,polyester_knit,cotton_plain,linen,cotton_terry,denim`):
+--no-vary size,cut --fabric silk,polyester_knit,cotton_plain,linen,cotton_terry,denim`):
 
 | Fabric | silk | polyester knit | plain cotton | linen | cotton terry | denim |
 |---|---|---|---|---|---|---|

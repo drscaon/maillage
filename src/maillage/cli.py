@@ -33,6 +33,23 @@ VARIATION_HELP = {
     "corners": "corner radius drawn (off: middle of the range)",
     "color": "pattern and colours drawn (off: first pattern and colours)",
 }
+# every aspect: those of VARIATION_HELP, and the fabric (a fixed one: --fabric)
+ASPECTS = (*VARIATION_HELP, "fabric")
+
+
+def _aspects(names):
+    """The type of --no-vary: a comma-separated list of aspect names, each one known."""
+
+    def parse(text: str) -> tuple:
+        got = tuple(t.strip() for t in text.split(",") if t.strip())
+        unknown = [t for t in got if t not in names]
+        if unknown:
+            raise argparse.ArgumentTypeError(
+                f"unknown aspect {', '.join(unknown)}: expected some of {','.join(names)}"
+            )
+        return got
+
+    return parse
 
 
 def _positive_int(text: str) -> int:
@@ -72,7 +89,11 @@ def _cmd_list(_args) -> int:
 
 
 def _cmd_generate(args) -> int:
-    var = Variations(**{k: getattr(args, k) for k in VARIATION_HELP})  # fabric: see --fabric
+    off = set(ASPECTS) if args.nominal else set(args.no_vary)
+    var = Variations(
+        **{k: getattr(args, k) and k not in off for k in VARIATION_HELP},
+        fabric="fabric" not in off,  # a fabric given with --fabric is used whatever this says
+    )
     scene = generate_scene(
         args.preset, args.count, args.seed, var, args.topology, args.vertices, args.fabric, args.format
     )
@@ -214,7 +235,21 @@ def build_parser() -> argparse.ArgumentParser:
     )
     g.add_argument("--out", default="output", help="output root folder (default: output)")
     for name, text in VARIATION_HELP.items():
-        g.add_argument(f"--{name}", dest=name, action=argparse.BooleanOptionalAction, default=True, help=text)
+        g.add_argument(
+            f"--{name}",
+            dest=name,
+            action=argparse.BooleanOptionalAction,
+            default=True,
+            help=f"{text}; deprecated, use --no-vary {name}",
+        )
+    g.add_argument(
+        "--no-vary",
+        metavar="ASPECTS",
+        type=_aspects(ASPECTS),
+        default=(),
+        help="aspects that stay nominal, comma-separated: " + ",".join(ASPECTS),
+    )
+    g.add_argument("--nominal", action="store_true", help="no aspect varies: the nominal piece")
     g.set_defaults(func=_cmd_generate)
 
     p = sub.add_parser("preview", help="flat preview sheet of generated pieces (needs matplotlib)")

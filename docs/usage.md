@@ -71,7 +71,7 @@ proportional to its weight: weight / sum of the weights. With
 round and 25 % of being oval: about 6, 3 and 3 out of 12 on average, the exact
 counts depending on the seed. Only the ratios matter (`@2`, `@1`, `@1` is the
 same as `@50`, `@25`, `@25`), and without any `@` all formats are equally
-likely. With `--no-size`, nothing is drawn: every piece takes the first format
+likely. With `--no-vary size`, nothing is drawn: every piece takes the first format
 of the list, at its exact size. The presets' own formats use the same weights
 (a `bath_towel` is 70×140 with weight 0.7, 90×150 with weight 0.3).
 

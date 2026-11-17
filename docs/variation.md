@@ -17,7 +17,7 @@ A piece records the colours its texture paints: a `solid` piece has one.
 Drawn but not recorded: the phases of the cut's waves, the widths of a
 `bands` pattern, and where the mesh's interior points fall. The fabric's
 own properties (areal density, stiffness) come from the fabric drawn, not
-from a draw of their own: see [engines.md](engines.md).
+from a draw of their own: see [physics.md](physics.md).
 
 <!-- declared: begin -->
 
