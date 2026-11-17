@@ -6,9 +6,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Changed v- `docs/engines.md` is now `docs/physics.md`, the name the other generators
-  use for the same page (PRV-35).
-alues
+### Changed values
 
 - A `solid` piece records the one colour its texture paints: its
   `variation:colors` no longer holds an accent that was drawn but never
@@ -16,6 +14,15 @@ alues
 
 ### Added
 
+- The conformance check (`contract.conformance`, `python -m maillage.conformance`,
+  shared by the four generators) checks sections 7 and 8 of the contract: a
+  variant set and its variants are named in `snake_case`, have a default
+  selection, and the set is one section 7 lists, with its meaning, for the
+  asset's generator (`contract.VARIANT_SETS`); no variant changes what identifies the asset (its `assetInfo`,
+  `primvaria:*` identity and semantic labels), each variant being selected in
+  turn on a copy of the stage; a mate frame is an `Xform` named `MateFrame` or
+  `MateFrame_<feature>`, inside an asset, in every variant; nothing is written
+  under `primvaria:mate:*`, which is not in the contract yet (PRV-35).
 - `generate --no-vary ASPECTS` and `--nominal`, as in the other generators of
   the suite, `fabric` included: `--no-vary cut,color` keeps those aspects
   nominal, and an unknown aspect is refused. `--no-cut`, `--no-color`… still
@@ -30,6 +37,11 @@ alues
   generators): four cases of fixed preset, seed and options whose pack tables
   must give the same drawn and measured values on every Python and platform
   of the CI. Contract, section 6, rule 1 (PRV-32).
+
+### Changed
+
+- `docs/engines.md` is now `docs/physics.md`, the name the other generators
+  use for the same page (PRV-35).
 
 ## [0.3.0b1] - 2026-11-13 (beta)
 
