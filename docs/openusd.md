@@ -10,12 +10,16 @@ Z up, metres, kilograms. `/World` is the default prim.
 
 ```
 /World
-  /Looks/<piece>      UsdPreviewSurface + UsdUVTexture (textures/<piece>.png)
-  /Cloths/<piece>     UsdGeom.Mesh, flat on the ground, laid out in rows
+  /Cloths/<piece>     UsdGeom.Mesh, flat on the ground, laid out in rows (the asset)
+    /Looks/surface    UsdPreviewSurface + UsdUVTexture (textures/<piece>.png)
   /PhysicsScene       gravity (shared, see below)
   /Ground             the shared ground, its top face at z = 0 (CollisionAPI)
   /GroundMaterial     its physics material
 ```
+
+A piece's material is inside it, so a piece referenced alone into another
+stage keeps its look (contract, section 4); so is the deformable material
+the OmniPhysics layer adds (`Looks/Phys_<fabric>`).
 
 ## Ground and physics scene (the same in every Primvaria project)
 

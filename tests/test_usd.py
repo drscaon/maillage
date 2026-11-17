@@ -56,8 +56,8 @@ def test_material_and_texture(folder):
     stage = Usd.Stage.Open(str(folder / "maillage_flag.usdc"))
     prim = stage.GetPrimAtPath("/World/Cloths/flag_001")
     mat, _ = UsdShade.MaterialBindingAPI(prim).ComputeBoundMaterial()
-    assert mat.GetPath() == "/World/Looks/flag_001"
-    tex = UsdShade.Shader(stage.GetPrimAtPath("/World/Looks/flag_001/Texture"))
+    assert mat.GetPath() == "/World/Cloths/flag_001/Looks/surface"
+    tex = UsdShade.Shader(stage.GetPrimAtPath("/World/Cloths/flag_001/Looks/surface/Texture"))
     asset = tex.GetInput("file").Get()
     assert (folder / asset.path).resolve() == (folder / "textures" / "flag_001.png").resolve()
     assert asset.resolvedPath  # the texture resolves from the layer

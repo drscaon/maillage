@@ -3,8 +3,9 @@
 Stage layout (Z up, metres, kilograms):
 
     /World                       default prim
-      /Looks/<piece>             UsdPreviewSurface material with the pattern texture
-      /Cloths/<piece>            UsdGeom.Mesh, flat, laid on the ground
+      /Cloths/<piece>            UsdGeom.Mesh, flat, laid on the ground (the asset root)
+        /Looks/surface           its UsdPreviewSurface material with the pattern texture: inside
+                                 the asset, so a piece referenced alone keeps it (contract, section 4)
       /PhysicsScene              gravity 9.81 m/s² along -Z (ground.py, shared by Primvaria)
       /Ground                    the shared ground: a 2 cm box, its top at z = 0
       /GroundMaterial            its physics material
@@ -93,13 +94,15 @@ def export_stage(path: str | Path, scene) -> Path:
     stage.SetDefaultPrim(world.GetPrim())
     set_group(world.GetPrim(), assembly=True)
     aspects = [name for name, on in asdict(scene.variations).items() if on]
-    UsdGeom.Scope.Define(stage, "/World/Looks")
     set_group(UsdGeom.Scope.Define(stage, "/World/Cloths").GetPrim())
 
     for p in scene.pieces:
         fab = FABRICS[p.fabric]
-        mat = _material(stage, f"/World/Looks/{p.name}", f"./textures/{p.name}.png", fab["roughness"])
         mesh = UsdGeom.Mesh.Define(stage, f"/World/Cloths/{p.name}")
+        UsdGeom.Scope.Define(stage, f"/World/Cloths/{p.name}/Looks")
+        mat = _material(
+            stage, f"/World/Cloths/{p.name}/Looks/surface", f"./textures/{p.name}.png", fab["roughness"]
+        )
         pts = p.mesh.points.astype(np.float32)
         mesh.CreatePointsAttr(Vt.Vec3fArray.FromNumpy(pts))
         mesh.CreateFaceVertexCountsAttr(Vt.IntArray.FromNumpy(p.mesh.face_counts.astype(np.int32)))
