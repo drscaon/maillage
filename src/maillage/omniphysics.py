@@ -20,7 +20,8 @@ for any tool):
                                       + UsdPhysics CollisionAPI
                                       faces split into triangles if the mesh
                                       has quads (the schema requires triangles)
-  /World/Looks/Phys_<fabric>          OmniPhysicsSurfaceDeformableMaterialAPI:
+  /World/Cloths/<piece>/Looks/Phys_<fabric>
+                                      OmniPhysicsSurfaceDeformableMaterialAPI:
                                       Young's modulus and surface thickness
                                       from the fabric's tensile stiffness and
                                       bending rigidity (fabrics.shell), Poisson's
@@ -56,8 +57,9 @@ def overlay_path(usd: Path) -> Path:
     return usd.with_name(f"{usd.stem}_omniphysics.usda")
 
 
-def _material(stage, fabric: str) -> UsdShade.Material:
-    path = f"/World/Looks/Phys_{fabric}"
+def _material(stage, piece, fabric: str) -> UsdShade.Material:
+    """The deformable material of a piece, inside it: a piece referenced alone keeps it."""
+    path = f"{piece.GetPath()}/Looks/Phys_{fabric}"
     mat = UsdShade.Material.Define(stage, path)
     prim = mat.GetPrim()
     for api in MATERIAL_APIS:
@@ -90,7 +92,6 @@ def write_overlay(usd) -> Path:
     UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
     UsdPhysics.SetStageKilogramsPerUnit(stage, 1.0)
     stage.SetDefaultPrim(stage.GetPrimAtPath("/World"))  # the physics scene comes from the file
-    materials = {}
     for prim in stage.GetPrimAtPath("/World/Cloths").GetChildren():
         if not prim.IsA(UsdGeom.Mesh):
             continue
@@ -114,11 +115,9 @@ def write_overlay(usd) -> Path:
         prim.CreateAttribute(
             "omniphysics:restBendAnglesDefault", _F.Token, variability=Sdf.VariabilityUniform
         ).Set("flatDefault")
-        fabric = prim.GetAttribute("maillage:fabric").Get()
-        if fabric not in materials:
-            materials[fabric] = _material(stage, fabric)
+        material = _material(stage, prim, prim.GetAttribute("maillage:fabric").Get())
         UsdShade.MaterialBindingAPI.Apply(prim).Bind(
-            materials[fabric], UsdShade.Tokens.weakerThanDescendants, "physics"
+            material, UsdShade.Tokens.weakerThanDescendants, "physics"
         )
     layer.Save()
     return out

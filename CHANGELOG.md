@@ -14,6 +14,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- The conformance check (shared by the four generators) checks that an asset
+  is whole on its own (contract, section 4): every relationship or connection
+  inside an asset root (a material binding, a physics material, a joint's
+  bodies) points inside it, in every variant (PRV-40).
 - The conformance check (`contract.conformance`, `python -m maillage.conformance`,
   shared by the four generators) checks sections 7 and 8 of the contract: a
   variant set and its variants are named in `snake_case`, have a default
@@ -42,6 +46,13 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 - `docs/engines.md` is now `docs/physics.md`, the name the other generators
   use for the same page (PRV-35).
+
+### Breaking changes
+
+- A piece's material is inside it, `/World/Cloths/<piece>/Looks/surface`,
+  instead of `/World/Looks/<piece>`; the OmniPhysics layer's deformable
+  material too (`Looks/Phys_<fabric>`, one per piece). A piece referenced
+  alone into another stage lost its texture; it now keeps it (PRV-40).
 
 ## [0.3.0b1] - 2026-11-13 (beta)
 
