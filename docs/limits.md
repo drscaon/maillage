@@ -10,7 +10,9 @@ Part of the [Maillage](../README.md) documentation.
   structure and by the OpenUSD validators, but has not been run in Isaac Sim
   (no NVIDIA GPU here); flags are not attached by their hoist corners there.
 - **Stiffness not calibrated.** The engine-neutral stiffness values are
-  orders of magnitude, not measurements of these fabrics.
+  estimates from published ranges, not measurements of these fabrics. The
+  areal densities come from fabric specifications; the frictions and most
+  thicknesses are estimates ([Sources](sources.md)).
 - **Fabrics drape alike in Blender.** Blender's bending stiffness is kept
   low for every fabric (see the [roadmap](#roadmap)): silk and denim drape
   with nearly the same coefficient there. In MuJoCo they differ (see the

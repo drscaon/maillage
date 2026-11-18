@@ -39,7 +39,8 @@ How the values were set (with the drop test itself, maillage/blender/):
   fabrics drape more.
 
 These are **plausible, consistent values, not calibrated** against measured
-fabric properties, and because of that stability limit stiff fabrics (denim,
+fabric properties (the areal densities come from fabric specifications, see
+sources.py and docs/sources.md), and because of that stability limit stiff fabrics (denim,
 terry) drape more in Blender than real ones.
 
 Engine-neutral stiffness, in SI units, for engines with a thin-shell model
@@ -81,12 +82,12 @@ FABRICS = {
     },
     "cotton_waffle": {
         "label": "Cotton waffle weave",
-        "areal_density": 0.22,
+        "areal_density": 0.29,
         "thickness": 0.0015,
         "friction": 0.6,
         "roughness": 0.9,
         "hem_bending_factor": 3.0,
-        "blender": {"tension": 0.0066, "shear": 0.00264, "bending": 0.000381, "air_damping": 7.33e-05},
+        "blender": {"tension": 0.0087, "shear": 0.00348, "bending": 0.000502, "air_damping": 7.33e-05},
         "tensile_stiffness": 800,
         "bending_rigidity": 1.5e-05,
         "poissons_ratio": 0.3,
@@ -105,36 +106,36 @@ FABRICS = {
     },
     "cotton_percale": {
         "label": "Cotton percale (bed linen)",
-        "areal_density": 0.12,
+        "areal_density": 0.13,
         "thickness": 0.00025,
         "friction": 0.5,
         "roughness": 0.85,
         "hem_bending_factor": 4.0,
-        "blender": {"tension": 0.0036, "shear": 0.00144, "bending": 7.8e-05, "air_damping": 4e-05},
+        "blender": {"tension": 0.0039, "shear": 0.00156, "bending": 8.45e-05, "air_damping": 4e-05},
         "tensile_stiffness": 1500,
         "bending_rigidity": 4e-06,
         "poissons_ratio": 0.3,
     },
     "linen": {
         "label": "Linen",
-        "areal_density": 0.18,
+        "areal_density": 0.2,
         "thickness": 0.00035,
         "friction": 0.55,
         "roughness": 0.85,
         "hem_bending_factor": 3.0,
-        "blender": {"tension": 0.0054, "shear": 0.00216, "bending": 0.000374, "air_damping": 6e-05},
+        "blender": {"tension": 0.006, "shear": 0.0024, "bending": 0.000416, "air_damping": 6e-05},
         "tensile_stiffness": 2500,
         "bending_rigidity": 1.5e-05,
         "poissons_ratio": 0.3,
     },
     "denim": {
         "label": "Denim (cotton twill, ~12 oz)",
-        "areal_density": 0.4,
+        "areal_density": 0.407,
         "thickness": 0.0007,
         "friction": 0.6,
         "roughness": 0.85,
         "hem_bending_factor": 2.0,
-        "blender": {"tension": 0.016, "shear": 0.0064, "bending": 0.00208, "air_damping": 4e-05},
+        "blender": {"tension": 0.0163, "shear": 0.00651, "bending": 0.00212, "air_damping": 4e-05},
         "tensile_stiffness": 4000,
         "bending_rigidity": 0.00012,
         "poissons_ratio": 0.3,
@@ -142,7 +143,7 @@ FABRICS = {
     "fleece": {
         "label": "Polyester fleece",
         "areal_density": 0.25,
-        "thickness": 0.003,
+        "thickness": 0.0015,
         "friction": 0.8,
         "roughness": 0.95,
         "hem_bending_factor": 2.0,
@@ -166,7 +167,7 @@ FABRICS = {
     "polyester_knit": {
         "label": "Polyester knit (flag fabric)",
         "areal_density": 0.115,
-        "thickness": 0.0002,
+        "thickness": 0.0003,
         "friction": 0.4,
         "roughness": 0.6,
         "hem_bending_factor": 4.0,

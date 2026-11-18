@@ -191,8 +191,9 @@ results: [Engines and drape tests](https://github.com/drscaon/maillage/blob/main
 
 The short version; the full list is in [Limits and roadmap](https://github.com/drscaon/maillage/blob/main/docs/limits.md).
 
-- Stiffness values are orders of magnitude from published ranges, **not
-  calibrated** against measurements of these fabrics.
+- Stiffness values are estimates from published ranges, **not calibrated**
+  against measurements of these fabrics. Areal densities come from fabric
+  specifications ([Sources](https://github.com/drscaon/maillage/blob/main/docs/sources.md)).
 - Fabrics drape differently in MuJoCo; **in Blender they drape alike**.
 - The OmniPhysics layer is checked for structure, **not simulated yet**.
 - Flat pieces only: no garments, no folded or crumpled starting states.
@@ -214,6 +215,7 @@ Conventions and continuous integration: [Development](https://github.com/drscaon
 | [Usage in depth](https://github.com/drscaon/maillage/blob/main/docs/usage.md) | The preset list, fabrics, formats, mesh options and how a piece is built. |
 | [OpenUSD layout and contract](https://github.com/drscaon/maillage/blob/main/docs/openusd.md) | How a piece is laid out in the file, the ground and physics scene, OpenUSD compliance, and what the Primvaria contract writes on every piece. |
 | [What each piece draws](https://github.com/drscaon/maillage/blob/main/docs/variation.md) | How every drawn value follows its preset, what each pattern draws, and every preset's numbers, checked by a test against what the generator draws. |
+| [Sources of the physical values](https://github.com/drscaon/maillage/blob/main/docs/sources.md) | Where every areal density, thickness, friction and stiffness comes from (fabric specifications, or an estimate and what it rests on), checked by a test. |
 | [Physics: engines and drape tests](https://github.com/drscaon/maillage/blob/main/docs/physics.md) | The engine-neutral stiffness, the MuJoCo and OmniPhysics exports, and the drape tests in Blender and MuJoCo with their results. |
 | [Limits and roadmap](https://github.com/drscaon/maillage/blob/main/docs/limits.md) | Everything Maillage does not do or has not verified, stated plainly, and what comes next. |
 | [Development](https://github.com/drscaon/maillage/blob/main/docs/development.md) | Branch and release conventions, continuous integration. |

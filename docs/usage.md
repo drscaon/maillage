@@ -28,8 +28,10 @@ and rendered with Cycles; each image is framed on its own piece, so scales
 differ (30 cm washcloth to 3 m sheet). Same colours for the three terry
 presets: they share a palette and, with one seed, the same colour draw.*
 
-Sizes are common retail formats; values are realistic orders of magnitude,
-not measurements of a specific product. Flags use generic two or three band
+Sizes are common retail formats. Areal densities come from the
+specifications of fabrics and products of each kind, and two thicknesses too;
+the other thicknesses, the frictions and the stiffness are estimates. Each
+value and its source: [Sources](sources.md). Flags use generic two or three band
 designs with random colours on unequal, asymmetric bands, so that real
 national flags (equal or symmetric bands) are unlikely.
 
@@ -38,14 +40,14 @@ national flags (equal or symmetric bands) are unlikely.
 | Fabric | Areal density | Thickness | Friction |
 |---|---|---|---|
 | `cotton_terry` | 450 g/m² | 4 mm | 0.8 |
-| `cotton_waffle` | 220 g/m² | 1.5 mm | 0.6 |
+| `cotton_waffle` | 290 g/m² | 1.5 mm | 0.6 |
 | `cotton_plain` | 140 g/m² | 0.3 mm | 0.5 |
-| `cotton_percale` | 120 g/m² | 0.25 mm | 0.5 |
-| `linen` | 180 g/m² | 0.35 mm | 0.55 |
-| `denim` | 400 g/m² | 0.7 mm | 0.6 |
-| `fleece` | 250 g/m² | 3 mm | 0.8 |
+| `cotton_percale` | 130 g/m² | 0.25 mm | 0.5 |
+| `linen` | 200 g/m² | 0.35 mm | 0.55 |
+| `denim` | 407 g/m² | 0.7 mm | 0.6 |
+| `fleece` | 250 g/m² | 1.5 mm | 0.8 |
 | `microfiber` | 300 g/m² | 2 mm | 0.9 |
-| `polyester_knit` | 115 g/m² | 0.2 mm | 0.4 |
+| `polyester_knit` | 115 g/m² | 0.3 mm | 0.4 |
 | `silk` | 60 g/m² | 0.1 mm | 0.3 |
 | `wool_knit` | 350 g/m² | 3 mm | 0.7 |
 

@@ -168,13 +168,13 @@ coefficient (1: the disc stays flat; 0: it hangs straight down). MuJoCo
 | `silk` | 1.19 cm | 300 N/m | 0.54 |
 | `microfiber` | 1.72 cm | 500 N/m | 0.57 |
 | `wool_knit` | 2.06 cm | 150 N/m | 0.61 |
+| `cotton_waffle` | 1.74 cm | 800 N/m | 0.61 |
 | `fleece` | 2.01 cm | 200 N/m | 0.62 |
-| `cotton_waffle` | 1.91 cm | 800 N/m | 0.63 |
+| `cotton_percale` | 1.46 cm | 1500 N/m | 0.62 |
 | `cotton_terry` | 2.08 cm | 600 N/m | 0.64 |
 | `cotton_plain` | 1.63 cm | 1500 N/m | 0.67 |
-| `cotton_percale` | 1.50 cm | 1500 N/m | 0.67 |
-| `linen` | 2.04 cm | 2500 N/m | 0.74 |
-| `denim` | 3.13 cm | 4000 N/m | 0.83 |
+| `linen` | 1.97 cm | 2500 N/m | 0.70 |
+| `denim` | 3.11 cm | 4000 N/m | 0.83 |
 
 The bending length is Pierce's, (bending rigidity / weight per unit
 area)^(1/3): the length over which a fabric bends under its own weight. The
