@@ -35,17 +35,19 @@ draped assets.
 ### Results
 
 Indicative results of `maillage drop-test` on three pieces of each preset
-(seed 1, ~1,500 vertices per piece, 120 frames, Blender 5.2):
+(seed 1, ~1,500 vertices per piece, 120 frames, Blender 5.2; `tea_towel`,
+`napkin`, `tablecloth`, `bed_sheet`, `flag` and the fabric squares measured
+again on Blender 5.3 in November 2026, with the values of [Sources](sources.md)):
 
 | Preset | Mass (g) | Vertices | Scenario | Drape coefficient | Stretch (p99) | Result |
 |---|---|---|---|---|---|---|
 | `bath_towel` | 429–450 | 1563–1582 | drape | 0.22–0.23 | 3.1–3.7 % | 3/3 pass |
 | `hand_towel` | 219–229 | 1563–1585 | drape | 0.22–0.26 | 2.6–3.6 % | 3/3 pass |
 | `washcloth` | 39–41 | 1562–1572 | drape | 0.40–0.49 | 4.2–5.1 % | 3/3 pass |
-| `tea_towel` | 75–78 | 1549–1570 | drape | 0.28 | 2.8–2.9 % | 3/3 pass |
-| `napkin` | 28–29 | 1559–1578 | drape | 0.36–0.38 | 2.2–2.6 % | 3/3 pass |
+| `tea_towel` | 99–103 | 1549–1570 | drape | 0.27–0.29 | 2.9–3.0 % | 3/3 pass |
+| `napkin` | 32 | 1559–1578 | drape | 0.36–0.38 | 2.1–2.4 % | 3/3 pass |
 | `tablecloth` | 356–470 | 1564–1572 | drape | 0.20–0.25 | 3.1–4.0 % | 3/3 pass |
-| `bed_sheet` | 636–863 | 1553–1573 | drape | 0.28–0.37 | 3.0–3.1 % | 3/3 pass |
+| `bed_sheet` | 689–935 | 1553–1573 | drape | 0.29–0.34 | 2.9–3.1 % | 3/3 pass |
 | `microfiber_cloth` | 47–49 | 1554–1575 | drape | 0.37–0.41 | 2.2–2.4 % | 3/3 pass |
 | `bandana` | 42–43 | 1558–1576 | drape | 0.30–0.33 | 2.5–3.1 % | 3/3 pass |
 | `silk_scarf` | 48–49 | 1560–1579 | drape | 0.25–0.27 | 3.1–3.4 % | 3/3 pass |
@@ -61,11 +63,11 @@ same 40 cm square was draped in each (`maillage generate --preset napkin
 
 | Fabric | silk | polyester knit | plain cotton | linen | cotton terry | denim |
 |---|---|---|---|---|---|---|
-| Mass of the square | 10 g | 18 g | 22 g | 29 g | 72 g | 64 g |
-| Drape coefficient | 0.37 | 0.35 | 0.42 | 0.40 | 0.38 | 0.42 |
+| Mass of the square | 10 g | 18 g | 22 g | 32 g | 72 g | 65 g |
+| Drape coefficient | 0.35 | 0.32 | 0.37 | 0.39 | 0.37 | 0.40 |
 
 In Blender the fabrics differ in mass, thickness, friction and look much
-more than in drape: the drape coefficients stay within 0.35–0.42, where real
+more than in drape: the drape coefficients stay within 0.32–0.40, where real
 silk and denim are far apart (see the [roadmap](limits.md#roadmap)). In MuJoCo, with
 the engine-neutral stiffness, they do not drape alike: see the
 [fabric drape test](#fabric-drape-test).
@@ -168,13 +170,13 @@ coefficient (1: the disc stays flat; 0: it hangs straight down). MuJoCo
 | `silk` | 1.19 cm | 300 N/m | 0.54 |
 | `microfiber` | 1.72 cm | 500 N/m | 0.57 |
 | `wool_knit` | 2.06 cm | 150 N/m | 0.61 |
+| `cotton_waffle` | 1.74 cm | 800 N/m | 0.61 |
 | `fleece` | 2.01 cm | 200 N/m | 0.62 |
-| `cotton_waffle` | 1.91 cm | 800 N/m | 0.63 |
+| `cotton_percale` | 1.46 cm | 1500 N/m | 0.62 |
 | `cotton_terry` | 2.08 cm | 600 N/m | 0.64 |
 | `cotton_plain` | 1.63 cm | 1500 N/m | 0.67 |
-| `cotton_percale` | 1.50 cm | 1500 N/m | 0.67 |
-| `linen` | 2.04 cm | 2500 N/m | 0.74 |
-| `denim` | 3.13 cm | 4000 N/m | 0.83 |
+| `linen` | 1.97 cm | 2500 N/m | 0.70 |
+| `denim` | 3.11 cm | 4000 N/m | 0.83 |
 
 The bending length is Pierce's, (bending rigidity / weight per unit
 area)^(1/3): the length over which a fabric bends under its own weight. The

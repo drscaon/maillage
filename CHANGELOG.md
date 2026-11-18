@@ -8,12 +8,26 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Changed values
 
+- Every physical value now names its source (PRV-33), and the values that
+  did not match theirs were corrected: areal densities of `cotton_waffle`
+  220 → 290 g/m² (kitchen waffle towels, 250 to 350), `cotton_percale` 120 →
+  130 g/m² (125 to 132), `linen` 180 → 200 g/m² (linen tea towels, 190 to
+  220), `denim` 400 → 407 g/m² (12 oz/yd²); thickness of `fleece` 3 → 1.5 mm
+  (polar fleece, 0.8 to 1.5 mm) and of `polyester_knit` 0.2 → 0.3 mm (a
+  knitted flag fabric). The Blender stiffness of the four fabrics follows
+  their areal density by the rules of `fabrics.py`. Pieces of `tea_towel`,
+  `napkin`, `tablecloth` and `bed_sheet` in those fabrics are heavier.
 - A `solid` piece records the one colour its texture paints: its
   `variation:colors` no longer holds an accent that was drawn but never
   painted. The draws and the pieces are unchanged (PRV-34).
 
 ### Added
 
+- `docs/sources.md` and `maillage/sources.py`: the source of every physical
+  value (fabric and product specifications, or an estimate with what it
+  rests on) and the range each source gives. `tests/test_sources.py` fails
+  on a value with no source, on a value outside its source's range, and when
+  the page is not the module's tables (PRV-33).
 - The conformance check (shared by the four generators) checks that an asset
   is whole on its own (contract, section 4): every relationship or connection
   inside an asset root (a material binding, a physics material, a joint's

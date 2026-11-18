@@ -20,7 +20,7 @@ Each preset describes *distributions*, not a single piece:
   drawn from;
 - category: display family (see CATEGORIES).
 
-Sizes are common retail formats; values are realistic orders of magnitude.
+Sizes are common retail formats; every value names its source in sources.py (docs/sources.md).
 """
 
 CATEGORIES = ["Bath", "Kitchen", "Table", "Bedding", "Cleaning", "Accessories", "Outdoor"]
