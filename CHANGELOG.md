@@ -58,6 +58,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- README and docs images rendered again with the sourced values of PRV-33
+  (areal densities, thicknesses): the board of the 12 presets, the tea towel
+  drape, the fabric squares and the flags GIFs. The board now has its script,
+  `scripts/readme_images.py`.
 - `docs/engines.md` is now `docs/physics.md`, the name the other generators
   use for the same page (PRV-35).
 

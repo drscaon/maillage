@@ -82,7 +82,7 @@ silk,cotton_plain,linen,denim` then `maillage drop-test output/napkin --frames 4
 ![Two flags hanging from their poles, fluttering in the wind](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/flags_wind.gif)
 
 *Flags hung by their hoist corners in the wind: `maillage drop-test
-output/flag --wind 4 --gif`.*
+output/flag --pieces 2 --frames 96 --wind 4 --gif`.*
 
 ### Blender values
 

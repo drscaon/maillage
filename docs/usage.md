@@ -24,7 +24,7 @@ Part of the [Maillage](../README.md) documentation.
 ![The 12 presets side by side, one piece each, draped in Blender](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/all_presets.jpg)
 
 *One piece of each preset (seed 2), simulated 5 s by the Blender drape test
-and rendered with Cycles; each image is framed on its own piece, so scales
+and rendered with Cycles (`python scripts/readme_images.py`); each image is framed on its own piece, so scales
 differ (30 cm washcloth to 3 m sheet). Same colours for the three terry
 presets: they share a palette and, with one seed, the same colour draw.*
 
