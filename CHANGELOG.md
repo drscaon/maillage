@@ -6,6 +6,15 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0b1] - 2026-11-20 (beta)
+
+### Breaking changes
+
+- A piece's material is inside it, `/World/Cloths/<piece>/Looks/surface`,
+  instead of `/World/Looks/<piece>`; the OmniPhysics layer's deformable
+  material too (`Looks/Phys_<fabric>`, one per piece). A piece referenced
+  alone into another stage lost its texture; it now keeps it (PRV-40).
+
 ### Changed values
 
 - Every physical value now names its source (PRV-33), and the values that
@@ -64,13 +73,6 @@ and the project uses [Semantic Versioning](https://semver.org/).
   `scripts/readme_images.py`.
 - `docs/engines.md` is now `docs/physics.md`, the name the other generators
   use for the same page (PRV-35).
-
-### Breaking changes
-
-- A piece's material is inside it, `/World/Cloths/<piece>/Looks/surface`,
-  instead of `/World/Looks/<piece>`; the OmniPhysics layer's deformable
-  material too (`Looks/Phys_<fabric>`, one per piece). A piece referenced
-  alone into another stage lost its texture; it now keeps it (PRV-40).
 
 ## [0.3.0b1] - 2026-11-13 (beta)
 
