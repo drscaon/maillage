@@ -93,6 +93,7 @@ summary.
 | `--topology grid` | | structured quads stretched over the four cut edges (Coons patch); rectangles only, sharp corners; round formats are skipped |
 | `--vertices N` | 1500 | target vertices per piece, whatever its size |
 | `--count N`, `--seed S` | 12, 1 | number of pieces, random seed; same options and seed give the same pieces |
+| `--engines LIST` | `physx,omniphysics,newton` | engine layers written beside the file, comma-separated, or `none`; Maillage writes the OmniPhysics and Newton ones, see [Newton layer](physics.md#newton-layer) |
 
 ![Flat preview of nine tea towels, with their mesh](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/sheet_tea_towel.png)
 

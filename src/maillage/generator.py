@@ -11,6 +11,7 @@ import numpy as np
 
 from . import mesh as meshing
 from . import texture
+from .contract import ENGINES
 from .fabrics import FABRICS
 from .formats import describe, parse_formats
 from .outline import Cut, Outline
@@ -300,10 +301,17 @@ def _minmeanmax(values):
     return {"min": float(v.min()), "mean": float(v.mean()), "max": float(v.max())}
 
 
-def write_outputs(scene: Scene, out_root: str | Path = "output") -> Path:
-    """Write the OpenUSD scene, its OmniPhysics layer and MuJoCo model, the textures, and the
-    pack's table and manifest (instances.csv, manifest.json). Returns the folder."""
+def write_outputs(scene: Scene, out_root: str | Path = "output", engines=ENGINES) -> Path:
+    """Write the OpenUSD scene, its engine layers and MuJoCo model, the textures, and the
+    pack's table and manifest (instances.csv, manifest.json). Returns the folder.
+
+    engines: the engine layers written beside the file, among ENGINES (contract, section 9);
+    Maillage writes "omniphysics" and "newton", and has nothing for "physx"."""
     from .usd_export import export_stage
+
+    unknown = set(engines) - set(ENGINES)
+    if unknown:
+        raise ValueError(f"unknown engine {sorted(unknown)[0]!r}; expected some of {', '.join(ENGINES)}")
 
     out = Path(out_root) / scene.preset_key
     (out / "textures").mkdir(parents=True, exist_ok=True)
@@ -311,10 +319,13 @@ def write_outputs(scene: Scene, out_root: str | Path = "output") -> Path:
         texture.write_png(out / "textures" / f"{p.name}.png", p.image)
     usd = export_stage(out / f"maillage_{scene.preset_key}.usdc", scene)
     # engine-specific exports, read back from the file
-    from .omniphysics import write_overlay
+    from . import newton, omniphysics
     from .sim.mujoco_model import export as export_mjcf
 
-    write_overlay(usd)
+    for name, module in (("omniphysics", omniphysics), ("newton", newton)):
+        module.overlay_path(usd).unlink(missing_ok=True)
+        if name in engines:
+            module.write_overlay(usd)
     export_mjcf(usd)
 
     # instances.csv (one row per piece, read back from the file) and manifest.json

@@ -21,6 +21,7 @@ from pathlib import Path
 
 from . import __version__
 from .blender import DROP_TEST_SCRIPT
+from .contract import ENGINES, engine_list
 from .fabrics import FABRICS
 from .formats import describe, parse_formats
 from .generator import Variations, generate_scene, summarize, write_outputs
@@ -97,7 +98,7 @@ def _cmd_generate(args) -> int:
     scene = generate_scene(
         args.preset, args.count, args.seed, var, args.topology, args.vertices, args.fabric, args.format
     )
-    out = write_outputs(scene, args.out)
+    out = write_outputs(scene, args.out, engines=args.engines)
     print(json.dumps(summarize(scene), indent=2, ensure_ascii=False))
     print(f"written to {out}")
     return 0
@@ -234,6 +235,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="fabric for all pieces, or a comma-separated list used in turn (default: preset's mix)",
     )
     g.add_argument("--out", default="output", help="output root folder (default: output)")
+    g.add_argument(
+        "--engines",
+        type=engine_list,
+        default=ENGINES,
+        metavar="LIST",
+        help=f"engine layers beside each file, comma-separated, or none (default: {','.join(ENGINES)})",
+    )
     for name, text in VARIATION_HELP.items():
         g.add_argument(
             f"--{name}",

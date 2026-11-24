@@ -162,6 +162,7 @@ keeps them all nominal, as in the other generators of the suite. The options
 | File | Content |
 |---|---|
 | `maillage_<preset>.usdc` | OpenUSD scene (Blender: File > Import > USD) |
+| `maillage_<preset>_newton.usda` | the same scene with the cloths as surface deformables in the schemas Newton reads (the AOUSD proposal's): a layer over the main file, see [Newton layer](https://github.com/drscaon/maillage/blob/main/docs/physics.md#newton-layer) |
 | `maillage_<preset>_omniphysics.usda` | the same scene with NVIDIA OmniPhysics surface deformables (Omniverse, Isaac Sim 5+): an OpenUSD layer over the main file, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/physics.md#engines) |
 | `maillage_<preset>.xml` | the same scene as a MuJoCo model, one flex cloth per piece, see [Engines](https://github.com/drscaon/maillage/blob/main/docs/physics.md#engines) |
 | `textures/<piece>.png` | pattern texture of each piece |

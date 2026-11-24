@@ -128,6 +128,7 @@ fabrics bend far more easily than a solid plate of the same thickness.
 |---|---|---|
 | Blender | the main file, through Blender's USD importer, with the `maillage:blender:*` stiffness | **yes**: `maillage drop-test`, every preset in CI |
 | MuJoCo | `maillage_<preset>.xml`: one flex per piece (`flexcomp`, triangle shell, `elastic2d="both"`), mass, friction | **yes**: `maillage sim-test`, every preset in CI |
+| Newton (CPU) | `maillage_<preset>_newton.usda`: the same surface deformables with the AOUSD proposal's schemas (`PhysicsDeformableBodyAPI`, `PhysicsSurfaceDeformableSimAPI`, `PhysicsSurfaceDeformableMaterialAPI`), see [Newton layer](#newton-layer) | **in Primvaria's CI**: every preset read, its mass as in the pack, dropped from 5 cm onto the ground and at rest, Newton 1.8 XPBD on CPU; no drape compared with MuJoCo yet |
 | NVIDIA OmniPhysics (Isaac Sim 5+) | `maillage_<preset>_omniphysics.usda`: surface deformables (`OmniPhysicsDeformableBodyAPI`, `OmniPhysicsSurfaceDeformableSimAPI`, `OmniPhysicsSurfaceDeformableMaterialAPI`), faces split into triangles | **structure only** (`python -m maillage.omniphysics`, OpenUSD validators): not simulated, OmniPhysics needs an NVIDIA RTX GPU |
 
 ### MuJoCo drape test
@@ -196,6 +197,23 @@ has no self-collision here, so folds can pass through each other. The mesh
 matters within about ±0.04: silk gives 0.52 to 0.59 and denim 0.83 to 0.89
 between 300 and 1200 vertices, which leaves the order and the spread
 unchanged.
+
+### Newton layer
+
+Newton 1.8 reads the deformable schemas of the AOUSD Physics working group's
+proposal, not NVIDIA's OmniPhysics ones. `maillage_<preset>_newton.usda` is
+the OmniPhysics layer written with those names: on each cloth mesh,
+`PhysicsDeformableBodyAPI` (`physics:mass`), `PhysicsSurfaceDeformableSimAPI`
+(rest shape and triangles, flat rest bend angles, the shell thickness as
+`physics:thicknesses`), the collider, and a `PhysicsSurfaceDeformableMaterialAPI`
+material per fabric (Young's modulus from `fabrics.shell`, Poisson's ratio,
+density, friction). The proposal is a draft and its names may change. Not
+exported, as in the OmniPhysics layer: a flag's pinned vertices, the stiffer
+hem. `python -m maillage.newton <folder>` checks the layer.
+
+`generate --engines` chooses the layers: `omniphysics`, `newton`, both (the
+default, which also names `physx`, a layer Maillage has nothing for), or
+`none`.
 
 ### OmniPhysics layer
 
