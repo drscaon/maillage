@@ -63,6 +63,7 @@ def test_mujoco_model_loads(fixture, request):
     assert model.nflex >= 1
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(not HAS_MUJOCO, reason="MuJoCo not installed")
 def test_mujoco_drape(towels):
     from maillage.sim import mujoco_test
@@ -74,6 +75,7 @@ def test_mujoco_drape(towels):
     assert 0 < piece["drape_coefficient"] < 1
 
 
+@pytest.mark.slow
 def test_fabrics_do_not_drape_alike(tmp_path):
     pytest.importorskip("mujoco")
     from maillage.sim.mujoco_test import ANCHOR_GAP, ANCHORS, bending_length, fabric_drape, fabric_lines
