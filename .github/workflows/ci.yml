@@ -1,13 +1,32 @@
 name: CI
 
+# Two levels. On a commit (push to main, pull request): the fast tests (pytest -m "not
+# slow") on Ubuntu and Python 3.12, and the engine checks on a sample of the presets
+# (.github/ci_presets.py). Before a release (release.yml calls this workflow with
+# full: true) and with the "Run workflow" button: every test on Linux, Windows and macOS
+# and on every Python, the oldest OpenUSD, and the engine checks on every preset.
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      full:
+        description: Every test, platform and preset (as before a release)
+        type: boolean
+        default: true
+  workflow_call:
+    inputs:
+      full:
+        description: Every test, platform and preset
+        type: boolean
+        default: true
 
 permissions:
   contents: read
+
+env:
+  FULL: ${{ inputs.full && 'true' || 'false' }}  # read by .github/ci_presets.py and the steps
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -20,6 +39,7 @@ jobs:
     # the same in the four generators, written once in the primvaria repository
     uses: drscaon/primvaria/.github/workflows/generator-checks.yml@main
     with:
+      full: ${{ inputs.full || false }}
       package: maillage
       smoke: |
         maillage --version
@@ -48,10 +68,10 @@ jobs:
         run: pip install -e ".[dev,blender]"
       - name: Blender tests
         run: pytest tests/test_blender.py -v
-      - name: Drop test of every preset
+      - name: Drop test of the presets
         run: |
           status=0
-          for preset in $(python -c "import maillage; print(' '.join(maillage.PRESETS))"); do
+          for preset in $(python .github/ci_presets.py maillage); do
             maillage generate --preset "$preset" --count 2 --vertices 800 --out ci-output > /dev/null
             maillage drop-test "ci-output/$preset" --pieces 2 --frames 120 || status=1
           done
@@ -65,7 +85,7 @@ jobs:
 
 
   sim:
-    name: MuJoCo drape test of every preset
+    name: MuJoCo drape test of the presets
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -76,9 +96,9 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install
         run: pip install -e ".[sim]"
-      - name: Drape test of every preset
+      - name: Drape test of the presets
         run: |
-          for preset in $(python -c "import maillage; print(' '.join(maillage.PRESETS))"); do
+          for preset in $(python .github/ci_presets.py maillage); do
             maillage generate --preset "$preset" --count 1 --vertices 400 --out ci-sim > /dev/null
           done
           maillage sim-test ci-sim/* --pieces 1
@@ -95,7 +115,7 @@ jobs:
           retention-days: 14
 
   openusd:
-    name: OpenUSD validators of every preset
+    name: OpenUSD validators of the presets
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -106,9 +126,9 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install
         run: pip install -e .
-      - name: Generate every preset
+      - name: Generate the presets
         run: |
-          for preset in $(python -c "from maillage.presets import PRESETS; print(' '.join(PRESETS))"); do
+          for preset in $(python .github/ci_presets.py maillage.presets); do
             maillage generate --preset "$preset" --count 2 --vertices 400 --out ci-usd > /dev/null
           done
       - name: Validate every file (what usdchecker runs), OmniPhysics layers included

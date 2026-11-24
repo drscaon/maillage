@@ -67,6 +67,7 @@ def clipped_normal(e, what):
     assert abs(at - expected) < 3.5 * np.sqrt(expected) + 1, f"{what}: {at} at ±{declared.CLIP}"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("key", list(PRESETS))
 def test_drawn_as_declared(key, stand_in, monkeypatch):
     p, rows = PRESETS[key], draws(key, stand_in, monkeypatch)

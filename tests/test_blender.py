@@ -11,6 +11,7 @@ import pytest
 pytestmark = pytest.mark.skipif(importlib.util.find_spec("bpy") is None, reason="bpy not installed")
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("preset,scenario", [("washcloth", "drape"), ("flag", "hang")])
 def test_drop_test(tmp_path, preset, scenario):
     run = [sys.executable, "-m", "maillage"]
