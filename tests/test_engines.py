@@ -93,3 +93,44 @@ def test_fabric_test_refuses_an_unknown_fabric(tmp_path):
 
     with pytest.raises(ValueError, match="unknown fabric"):
         fabric_drape(["velvet"], tmp_path)
+
+
+@pytest.mark.parametrize("fixture", ["towels", "grid"])
+def test_newton_layer(fixture, request):
+    from maillage import contract, newton
+
+    folder = request.getfixturevalue(fixture)
+    (layer,) = folder.glob("*_newton.usda")
+    assert newton.check(layer) == []
+    assert validate(layer) == []
+    assert contract.check(layer) == []
+    main = folder / f"{layer.stem.removesuffix('_newton')}.usdc"
+    text = main.read_bytes().decode("latin-1")
+    assert "SurfaceDeformable" not in text and "youngsModulus" not in text  # the file stays neutral
+    stage = Usd.Stage.Open(str(layer))
+    for prim in stage.GetPrimAtPath("/World/Cloths").GetChildren():
+        if prim.GetTypeName() != "Mesh":
+            continue
+        E, t = shell(FABRICS[prim.GetAttribute("maillage:fabric").Get()])
+        assert list(prim.GetAttribute("physics:thicknesses").Get()) == [pytest.approx(t)]
+        assert prim.GetAttribute("physics:mass").Get() == pytest.approx(
+            prim.GetAttribute("maillage:mass").Get()
+        )
+        from pxr import UsdShade
+
+        mat, _ = UsdShade.MaterialBindingAPI(prim).ComputeBoundMaterial("physics")
+        assert mat.GetPrim().GetAttribute("physics:youngsModulus").Get() == pytest.approx(E, rel=1e-6)
+
+
+@pytest.mark.parametrize(
+    ("engines", "omni", "newton_"), [("none", 0, 0), ("omniphysics", 1, 0), ("newton", 0, 1)]
+)
+def test_engines_chooses_the_layers(tmp_path, engines, omni, newton_):
+    from maillage.cli import main
+
+    assert (
+        main(["generate", "--preset", "napkin", "--count", "1", "--out", str(tmp_path), "--engines", engines])
+        == 0
+    )
+    assert len(list(tmp_path.rglob("*_omniphysics.usda"))) == omni
+    assert len(list(tmp_path.rglob("*_newton.usda"))) == newton_

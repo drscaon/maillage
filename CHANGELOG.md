@@ -6,6 +6,16 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- A Newton layer beside every file, `maillage_<preset>_newton.usda` (contract section 9, a
+  new engine layer): the cloths as surface deformables with the AOUSD proposal's schemas,
+  which Newton 1.8 reads (`PhysicsDeformableBodyAPI`, `PhysicsSurfaceDeformableSimAPI`,
+  `PhysicsSurfaceDeformableMaterialAPI`), the same values as the OmniPhysics layer. The file
+  is unchanged; `python -m maillage.newton` checks the layer.
+- `generate --engines LIST`: the engine layers to write (`physx`, `omniphysics`, `newton`,
+  comma-separated, or `none`); by default all of them, as the four Primvaria generators do.
+
 ## [0.4.0b1] - 2026-11-20 (beta)
 
 ### Breaking changes
