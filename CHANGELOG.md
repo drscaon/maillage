@@ -6,6 +6,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.0b1] - 2026-11-24 (beta)
+
 ### Added
 
 - A Newton layer beside every file, `maillage_<preset>_newton.usda` (contract section 9, a
