@@ -40,6 +40,10 @@ shape, measured outputs, honest limits.
 imported into Blender and draped by the drape test. Render:
 `maillage drop-test output/tea_towel --pieces 3 --render`.*
 
+> [!TIP]
+> If Maillage is useful to you, please ⭐ star the repository. Stars show me
+> what people actually need, so I can decide which features to develop next.
+
 ## What it does
 
 - Generates *N* distinct pieces of a preset (12 by default): format drawn from
