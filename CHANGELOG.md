@@ -6,6 +6,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Documentation
+
+- The README links to Primvaria's note on how standards are used; the pull request checklist gains a line for it.
+
 ### Changed
 
 - The code of the Primvaria contract comes from the new package primvaria-contract, which
