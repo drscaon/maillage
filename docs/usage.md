@@ -94,6 +94,7 @@ summary.
 | `--vertices N` | 1500 | target vertices per piece, whatever its size |
 | `--count N`, `--seed S` | 12, 1 | number of pieces, random seed; same options and seed give the same pieces |
 | `--engines LIST` | `physx,omniphysics,newton` | engine layers written beside the file, comma-separated, or `none`; Maillage writes the OmniPhysics and Newton ones, see [Newton layer](physics.md#newton-layer) |
+| `--usdz` / `primvaria_contract.usdz.package(file)` | off | also write the pack's file as one `.usdz` package: the file as root layer, the textures and files it references inside, its engine layers beside it in the package (`<name>.usdz[<name>_newton.usda]`); the pack's tables do not list packages |
 
 ![Flat preview of nine tea towels, with their mesh](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/sheet_tea_towel.png)
 
