@@ -29,6 +29,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
   unless it passes. Tests of 8 s or more are marked `slow` (`pytest -m "not slow"` runs
   the others).
 
+### Added
+
+- Every material says what it is made of with a semantic label (`semantics:labels:material`, Primvaria contract section 5), as NVIDIA's SimReady profiles ask; the shared ground is labelled `ground` and rendered with its own grey material (`concrete`). Requires primvaria-contract 0.4.0b1. The cloth's label is the fabric (`linen`).
+
 ## [0.5.0b1] - 2026-11-24 (beta)
 
 ### Added

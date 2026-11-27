@@ -42,7 +42,14 @@ from pathlib import Path
 import numpy as np
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 
-from .contract import set_group, write_identity, write_labels, write_measured, write_variation
+from .contract import (
+    set_group,
+    write_identity,
+    write_labels,
+    write_material_label,
+    write_measured,
+    write_variation,
+)
 from .fabrics import BLENDER_REFERENCE_EDGE, FABRICS
 from .ground import ground, physics_scene
 from .texture import srgb_to_linear
@@ -103,6 +110,7 @@ def export_stage(path: str | Path, scene) -> Path:
         mat = _material(
             stage, f"/World/Cloths/{p.name}/Looks/surface", f"./textures/{p.name}.png", fab["roughness"]
         )
+        write_material_label(mat, p.fabric)
         pts = p.mesh.points.astype(np.float32)
         mesh.CreatePointsAttr(Vt.Vec3fArray.FromNumpy(pts))
         mesh.CreateFaceVertexCountsAttr(Vt.IntArray.FromNumpy(p.mesh.face_counts.astype(np.int32)))
