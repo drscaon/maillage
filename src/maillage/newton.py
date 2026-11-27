@@ -32,6 +32,7 @@ from pathlib import Path
 import numpy as np
 from pxr import Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 
+from .contract import write_material_label
 from .fabrics import FABRICS, shell
 from .sim.usd_reader import find_usd, triangulate
 
@@ -48,6 +49,7 @@ def overlay_path(usd: Path) -> Path:
 def _material(stage, piece, fabric: str) -> UsdShade.Material:
     """The deformable material of a piece, inside it: a piece referenced alone keeps it."""
     mat = UsdShade.Material.Define(stage, f"{piece.GetPath()}/Looks/PhysNewton_{fabric}")
+    write_material_label(mat, fabric)
     prim = mat.GetPrim()
     prim.AddAppliedSchema(MATERIAL_API)
     fab = FABRICS[fabric]

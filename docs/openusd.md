@@ -110,3 +110,5 @@ Each piece also says what it is with OpenUSD's own semantic labels
 segmentation masks: `semantics:labels:class` holds `cloth` and the preset (`tea_towel`), and
 `semantics:labels:instance` the asset's name. The classes are a
 column of `instances.csv` and are listed in `manifest.json`.
+
+Every material also says what it is made of, in the taxonomy `material`: `semantics:labels:material` holds the fabric (`linen`), on each piece's look and on the deformable materials of the engine layers, and `concrete` on the shared ground's (contract, section 5).
